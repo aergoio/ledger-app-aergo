@@ -267,17 +267,31 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
   /* determine what to display according to the transaction type */
   switch (txn_type) {
-  case TXN_TRANSFER:
+  case TXN_TRANSFER: {
+    char *ptr;
+    unsigned int len, i;
 
     screens[0].title = "Amount";
     screens[0].value = amount_str;
+    screens[0].vsize = strlen(amount_str);
 
-    screens[1].title = "Recipient";
-    screens[1].value = recipient_address;
+    ptr = recipient_address;
+    len = EncodedAddressLength;  // strlen(recipient_address);
 
-    num_screens = 2;
+    i = 0;
+    while (len > 0) {
+      i++;
+      screens[i].title = "Recipient";
+      screens[i].value = ptr;
+      screens[i].vsize = len > MAX_CHARS_PER_LINE ? MAX_CHARS_PER_LINE : len;
+      ptr += screens[i].vsize;
+      len -= screens[i].vsize;
+    }
+
+    num_screens = i;
 
     break;
+  }
   case TXN_CALL: {
     char *name, *args;
 

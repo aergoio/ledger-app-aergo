@@ -27,9 +27,10 @@ unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 struct items {
   char *title;
   char *value;
+  unsigned int vsize;
 };
 
-static struct items screens[3];
+static struct items screens[8];
 static unsigned int num_screens;
 
 static unsigned int current_screen;
@@ -503,7 +504,7 @@ static void display_screen(unsigned int n) {
     strcpy(line1, screens[current_screen].title);
 
     text_to_display = screens[current_screen].value;
-    len_to_display = strlen(text_to_display);
+    len_to_display = screens[current_screen].vsize;
     current_text_pos = 0;
     display_text_part();
 
