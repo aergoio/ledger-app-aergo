@@ -267,31 +267,14 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
   /* determine what to display according to the transaction type */
   switch (txn_type) {
-  case TXN_TRANSFER: {
-    char *ptr;
-    unsigned int len, i;
+  case TXN_TRANSFER:
 
-    screens[0].title = "Amount";
-    screens[0].value = amount_str;
-    screens[0].vsize = strlen(amount_str);
-
-    ptr = recipient_address;
-    len = EncodedAddressLength;  // strlen(recipient_address);
-
-    i = 0;
-    while (len > 0) {
-      i++;
-      screens[i].title = "Recipient";
-      screens[i].value = ptr;
-      screens[i].vsize = len > MAX_CHARS_PER_LINE ? MAX_CHARS_PER_LINE : len;
-      ptr += screens[i].vsize;
-      len -= screens[i].vsize;
-    }
-
-    num_screens = i;
+    num_screens = 0;
+    add_screens("Amount", amount_str, strlen(amount_str), true);
+    add_screens("Recipient", recipient_address, EncodedAddressLength, false);  // strlen(recipient_address);
 
     break;
-  }
+
   case TXN_CALL: {
     char *name, *args;
 
@@ -305,33 +288,25 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     txn.payload[txn.payload_len-2] = 0;
     args = stripstr(name, "\",\"Args\":[");
 
-    /* set the 3 screens to be displayed */
+    /* set the screens to be displayed */
 
-    screens[0].title = "Contract";
-    screens[0].value = recipient_address;
-
-    screens[1].title = "Function";
-    screens[1].value = name;
-
-    screens[2].title = "Parameters";
-    screens[2].value = args;
-
-    num_screens = 3;
+    num_screens = 0;
+    add_screens("Contract", recipient_address, EncodedAddressLength, false);  // strlen(recipient_address);
+    add_screens("Function", name, strlen(name), true);
+    add_screens("Parameters", args, strlen(args), true);
 
     break;
   }
   case TXN_GOVERNANCE:
     if (strcmp(txn.payload,"{\"Name\":\"v1stake\"}") == 0) {
 
-      screens[0].title = "Stake";
-      screens[0].value = amount_str;
-      num_screens = 1;
+      num_screens = 0;
+      add_screens("Stake", amount_str, strlen(amount_str), true);
 
     } else if (strcmp(txn.payload,"{\"Name\":\"v1unstake\"}") == 0) {
 
-      screens[0].title = "Unstake";
-      screens[0].value = amount_str;
-      num_screens = 1;
+      num_screens = 0;
+      add_screens("Unstake", amount_str, strlen(amount_str), true);
 
     }
     break;

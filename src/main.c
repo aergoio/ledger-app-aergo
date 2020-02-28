@@ -498,6 +498,32 @@ static void on_new_transaction_part(unsigned char *text, unsigned int len) {
 #endif
 
 
+static void add_screens(char *title, char *value, unsigned int len, bool scroll_value) {
+  int i;
+
+  if (scroll_value) {
+
+    i = num_screens++;
+    screens[i].title = title;
+    screens[i].value = value;
+    screens[i].vsize = len;
+
+  } else {
+
+    char *ptr = value;
+    while (len > 0) {
+      i = num_screens++;
+      screens[i].title = title;
+      screens[i].value = ptr;
+      screens[i].vsize = len > MAX_CHARS_PER_LINE ? MAX_CHARS_PER_LINE : len;
+      ptr += screens[i].vsize;
+      len -= screens[i].vsize;
+    }
+
+  }
+
+}
+
 static void display_screen(unsigned int n) {
     current_screen = n;
 
