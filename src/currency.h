@@ -86,6 +86,7 @@ void encode_amount(unsigned char *buf, unsigned int len, char *out, unsigned int
   adjustDecimals((char*) G_io_apdu_buffer, i, out, outlen, DECIMALS);
 
   i = strlen(out);
+  if (i + 7 > outlen) return;
   out[i++] = ' ';
   out[i++] = 'A';
   out[i++] = 'E';

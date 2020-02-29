@@ -26,13 +26,15 @@ struct txn {
   unsigned char *gasPrice;      // variable-length big integer
   uint32_t type;
   unsigned char *chainId;       // hash value of chain identifier - 32 bytes
+  bool is_system;
+  bool is_enterprise;
 };
 
 struct txn txn;
 
 char recipient_address[EncodedAddressLength+1]; // encoded account address
 
-char amount_str[32];
+char amount_str[48];
 
 unsigned char txn_type;
 
@@ -117,14 +119,27 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
     if (size == 0 || len - size < str_len) goto loc_incomplete2;
     ptr += size;
     len -= size;
-    if (str_len != 33) goto loc_invalid;
+    if (str_len != 33) {
+      if (strncmp(ptr,"aergo.system",12) == 0) {
+        txn.is_system = true;
+      } else if (strncmp(ptr,"aergo.enterprise",16) == 0) {
+        txn.is_enterprise = true;
+      } else {
+        goto loc_invalid;
+      }
+    }
     txn.recipient = ptr;
     ptr += str_len;
     len -= str_len;
 
     sha256_add(txn.recipient, str_len);
 
-    encode_account(txn.recipient, str_len, recipient_address, sizeof recipient_address);
+    if (str_len == 33) {
+      encode_account(txn.recipient, str_len, recipient_address, sizeof recipient_address);
+    } else {
+      memmove(recipient_address, txn.recipient, strlen);
+      recipient_address[strlen] = 0;
+    }
   } else {
     recipient_address[0] = 0;
   }
@@ -137,7 +152,7 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
   if (size == 0 || len - size < str_len) goto loc_incomplete2;
   ptr += size;
   len -= size;
-  if (str_len > 20) goto loc_invalid;
+  if (str_len > 40) goto loc_invalid;
   txn.amount = ptr;
   ptr += str_len;
   len -= str_len;
@@ -234,6 +249,7 @@ loc_incomplete2:
 loc_incomplete:
 
 //  ...
+  THROW(0x6955);  // temporary
 
   return false;
 
@@ -287,6 +303,7 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
         txn.payload[txn.payload_len-1] != '}' ) goto loc_invalid;
     txn.payload[txn.payload_len-2] = 0;
     args = stripstr(name, "\",\"Args\":[");
+    if (!args) goto loc_invalid;
 
     /* set the screens to be displayed */
 
@@ -298,17 +315,30 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     break;
   }
   case TXN_GOVERNANCE:
-    if (strcmp(txn.payload,"{\"Name\":\"v1stake\"}") == 0) {
 
-      num_screens = 0;
-      add_screens("Stake", amount_str, strlen(amount_str), true);
+    if (!txn.payload || txn.payload_len==0) goto loc_invalid;
+    txn.payload[txn.payload_len] = 0; /* null terminator used by strcmp */
 
-    } else if (strcmp(txn.payload,"{\"Name\":\"v1unstake\"}") == 0) {
+    if (txn.is_system) {
 
-      num_screens = 0;
-      add_screens("Unstake", amount_str, strlen(amount_str), true);
+      if (strcmp(txn.payload,"{\"Name\":\"v1stake\"}") == 0) {
 
+        num_screens = 0;
+        add_screens("Stake", amount_str, strlen(amount_str), true);
+
+      } else if (strcmp(txn.payload,"{\"Name\":\"v1unstake\"}") == 0) {
+
+        num_screens = 0;
+        add_screens("Unstake", amount_str, strlen(amount_str), true);
+
+      } else {
+        goto loc_invalid;
+      }
+
+    } else {
+      goto loc_invalid;
     }
+
     break;
   //case TXN_NORMAL:
   //case TXN_DEPLOY:
