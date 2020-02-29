@@ -75,7 +75,7 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
 
 void encode_amount(unsigned char *buf, unsigned int len, char *out, unsigned int outlen) {
   uint256_t uint256;
-  int i;
+  unsigned int i;
 
   convertUint256BE(buf, len, &uint256);
   tostring256(&uint256, 10, (char *) G_io_apdu_buffer, 100);

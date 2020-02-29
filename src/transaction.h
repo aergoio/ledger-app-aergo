@@ -120,9 +120,9 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
     ptr += size;
     len -= size;
     if (str_len != 33) {
-      if (strncmp(ptr,"aergo.system",12) == 0) {
+      if (strncmp((char*)ptr,"aergo.system",12) == 0) {
         txn.is_system = true;
-      } else if (strncmp(ptr,"aergo.enterprise",16) == 0) {
+      } else if (strncmp((char*)ptr,"aergo.enterprise",16) == 0) {
         txn.is_enterprise = true;
       } else {
         goto loc_invalid;
@@ -137,8 +137,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
     if (str_len == 33) {
       encode_account(txn.recipient, str_len, recipient_address, sizeof recipient_address);
     } else {
-      memmove(recipient_address, txn.recipient, strlen);
-      recipient_address[strlen] = 0;
+      memmove(recipient_address, txn.recipient, str_len);
+      recipient_address[str_len] = 0;
     }
   } else {
     recipient_address[0] = 0;
