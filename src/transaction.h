@@ -80,10 +80,13 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
   unsigned char *ptr;
   unsigned int size;
   uint64_t str_len, val64;
+  unsigned int pos;
 
   memset(&txn, 0, sizeof(struct txn));
 
   ptr = buf;
+
+  pos = 1;
 
   // nonce
   if (len < 1) goto loc_incomplete;
@@ -95,6 +98,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
   len -= size;
 
   sha256_add(&txn.nonce, 8);
+
+  pos = 2;
 
   // account
   if (len < 1) goto loc_incomplete;
@@ -110,6 +115,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
   len -= str_len;
 
   sha256_add(txn.account, str_len);
+
+  pos = 3;
 
   // recipient
   if (len < 1) goto loc_incomplete;
@@ -144,6 +151,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
     recipient_address[0] = 0;
   }
 
+  pos = 4;
+
   // amount
   if (len < 1) goto loc_incomplete;
   if (*ptr != 0x22) goto loc_invalid;
@@ -160,6 +169,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
   sha256_add(txn.amount, str_len);
 
   encode_amount(txn.amount, str_len, amount_str, sizeof amount_str);
+
+  pos = 5;
 
   // payload
   if (len < 1) goto loc_incomplete;
@@ -179,6 +190,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
     sha256_add(txn.payload, str_len);
   }
 
+  pos = 6;
+
   // gasLimit
   if (len < 1) goto loc_incomplete;
   if (*ptr != 0x30) goto loc_invalid;
@@ -189,6 +202,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
   len -= size;
 
   sha256_add(&txn.gasLimit, 8);
+
+  pos = 7;
 
   // gasPrice
   if (len < 1) goto loc_incomplete;
@@ -209,6 +224,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
 
   sha256_add(txn.gasPrice, str_len);
 
+  pos = 8;
+
   // type
   if (len < 1) goto loc_incomplete;
   if (*ptr != 0x40) goto loc_invalid;
@@ -221,6 +238,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
   txn_type = txn.type;
 
   sha256_add(&txn.type, 4);
+
+  pos = 9;
 
   // chain_id
   if (len < 1) goto loc_incomplete;
@@ -239,8 +258,6 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
 
 
 
-
-
   return true;
 
 loc_incomplete2:
@@ -249,18 +266,21 @@ loc_incomplete2:
 loc_incomplete:
 
 //  ...
+
   THROW(0x6955);  // temporary
 
   return false;
 
 loc_invalid:
 
-  THROW(0x6984);  // invalid data
+  THROW(0x6720 + pos);  // invalid data
+//THROW(0x6984);        // invalid data
 
 }
 
 
 static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){
+  unsigned int pos = 1;
 
 
   if (is_first) {
@@ -297,6 +317,8 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     /* parse the payload */
     /* {"Name":"some_function","Args":[<parameters>]} */
 
+    pos = 3;
+
     if (strncmp(txn.payload, "{\"Name\":\"", 9) != 0) goto loc_invalid;
     name = txn.payload + 9;
     if (txn.payload[txn.payload_len-2] != ']' ||
@@ -316,6 +338,8 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
   }
   case TXN_GOVERNANCE:
 
+    pos = 4;
+
     if (!txn.payload || txn.payload_len==0) goto loc_invalid;
     txn.payload[txn.payload_len] = 0; /* null terminator used by strcmp */
 
@@ -332,10 +356,12 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
         add_screens("Unstake", amount_str, strlen(amount_str), true);
 
       } else {
+        pos = 5;
         goto loc_invalid;
       }
 
     } else {
+      pos = 6;
       goto loc_invalid;
     }
 
@@ -345,6 +371,7 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
   //case TXN_REDEPLOY:
   //case TXN_FEEDELEGATION:
   default:
+    pos = 7;
     goto loc_invalid;
   }
 
@@ -357,6 +384,7 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
 loc_invalid:
 
-  THROW(0x6984);  // invalid data
+  THROW(0x6740 + pos);  // invalid data
+//THROW(0x6984);        // invalid data
 
 }
