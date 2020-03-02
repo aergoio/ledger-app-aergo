@@ -433,8 +433,55 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
         goto loc_invalid;
       }
 
+    } else if (txn.is_enterprise) {
+
+      pos = 9;
+
+      if (!args) goto loc_invalid;
+
+      // {"Name":"appendAdmin","Args":[<new admin address>]}
+      if (strcmp(function_name,"appendAdmin") == 0) {
+
+        num_screens = 0;
+        add_screens("Add Admin", args, strlen(args), true);
+
+      // {"Name":"removeAdmin","Args":[<admin address>]}
+      } else if (strcmp(function_name,"removeAdmin") == 0) {
+
+        num_screens = 0;
+        add_screens("Remove Admin", args, strlen(args), true);
+
+      // {"Name":"appendConf","Args":[<config key>,<config value>]}
+      } else if (strcmp(function_name,"appendConf") == 0) {
+
+        num_screens = 0;
+        add_screens("Add Config", args, strlen(args), true);
+
+      // {"Name":"removeConf","Args":[<config key>,<config value>]}
+      } else if (strcmp(function_name,"removeConf") == 0) {
+
+        num_screens = 0;
+        add_screens("Remove Config", args, strlen(args), true);
+
+      // {"Name":"enableConf","Args":[<config key>,<true|false>]}
+      } else if (strcmp(function_name,"enableConf") == 0) {
+
+        num_screens = 0;
+        add_screens("Enable Config", args, strlen(args), true);
+
+      // {"Name":"changeCluster","Args":[{"command":"add","name":"[node name]","address":"[peer address]","peerid":"[peer id]"}]}
+      } else if (strcmp(function_name,"changeCluster") == 0) {
+
+        num_screens = 0;
+        add_screens("Change Cluster", args, strlen(args), true);
+
+      } else {
+        pos = 10;
+        goto loc_invalid;
+      }
+
     } else {
-      pos = 10;
+      pos = 11;
       goto loc_invalid;
     }
 
@@ -444,7 +491,7 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
   //case TXN_REDEPLOY:
   //case TXN_FEEDELEGATION:
   default:
-    pos = 7;
+    pos = 21;
     goto loc_invalid;
   }
 
