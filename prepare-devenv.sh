@@ -3,6 +3,8 @@
 # SOURCE THIS FILE
 # . prepare-devenv
 
+set -e
+
 
 if [[ $(dpkg-query -s python3-venv 2>&1) == *'is not installed'* ]]; then
     printf "\nPackage python3-venv is missing.\nOn Debian-like distros, run:\n\napt install python3-venv\n\n"
