@@ -6,14 +6,15 @@ Aergo application for Ledger Nano S
 
 The most secure method to protect your private key(s)
 
-This application can be used to sign Aergo transactions, like:
+This Ledger application can be used to sign Aergo transactions, like:
 
 * Transfer
 * Stake & Unstake
+* Votes (BP and DAO)
+* Name System (create and update)
 * Smart Contract function call
 
-The next version will support other types of transactions.
-
+Support for Smart Contract deploy will come later.
 
 ## Requirements
 
