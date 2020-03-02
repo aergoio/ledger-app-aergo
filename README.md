@@ -31,7 +31,7 @@ wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_ud
 Then install the requirements in a virtual environnment by sourcing `prepare-devenv.sh`:
 
 ```
-sudo apt install python3-venv python3-dev libudev-dev libusb-1.0-0-dev
+sudo apt install gcc-multilib g++-multilib python3-venv python3-dev libudev-dev libusb-1.0-0-dev
 source prepare-devenv.sh
 ```
 
