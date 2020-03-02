@@ -26,6 +26,7 @@ struct txn {
   unsigned char *gasPrice;      // variable-length big integer
   uint32_t type;
   unsigned char *chainId;       // hash value of chain identifier - 32 bytes
+  bool is_name;
   bool is_system;
   bool is_enterprise;
 };
@@ -129,6 +130,8 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
     if (str_len != 33) {
       if (strncmp((char*)ptr,"aergo.system",12) == 0) {
         txn.is_system = true;
+      } else if (strncmp((char*)ptr,"aergo.name",10) == 0) {
+        txn.is_name = true;
       } else if (strncmp((char*)ptr,"aergo.enterprise",16) == 0) {
         txn.is_enterprise = true;
       } else {
@@ -370,6 +373,8 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
     if (txn.is_system) {
 
+      pos = 5;
+
       // {"Name":"v1stake"}
       if (strcmp(function_name,"v1stake") == 0) {
 
@@ -399,12 +404,37 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
         add_screens("DAO Vote", args, strlen(args), true);
 
       } else {
-        pos = 5;
+        pos = 6;
+        goto loc_invalid;
+      }
+
+    } else if (txn.is_name) {
+
+      pos = 7;
+
+      // {"Name":"v1createName","Args":[<a name string>]}
+      if (strcmp(function_name,"v1createName") == 0) {
+
+        if (!args) goto loc_invalid;
+
+        num_screens = 0;
+        add_screens("Create Name", args, strlen(args), true);
+
+      // {"Name":"v1updateName","Args":[<a name string>, <new owner address>]}
+      } else if (strcmp(function_name,"v1updateName") == 0) {
+
+        if (!args) goto loc_invalid;
+
+        num_screens = 0;
+        add_screens("Update Name", args, strlen(args), true);
+
+      } else {
+        pos = 8;
         goto loc_invalid;
       }
 
     } else {
-      pos = 6;
+      pos = 10;
       goto loc_invalid;
     }
 
