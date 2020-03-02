@@ -278,9 +278,40 @@ loc_invalid:
 
 }
 
+/*
+** The JSON payload has these formats:
+**
+**  {"Name":"some_function","Args":[<parameters>]}
+**  {"Name":"some_function"}
+*/
+static bool parse_payload(char **pfunction_name, char **pargs) {
+  char *name, *args;
+
+// is the payload completely downloaded?
+
+  if (!txn.payload || txn.payload_len==0) goto loc_invalid;
+  if (txn.payload[txn.payload_len-1] != '}') goto loc_invalid;
+
+  txn.payload[txn.payload_len] = 0; /* null terminator used by strcmp and stripstr */
+
+  if (strncmp(txn.payload, "{\"Name\":\"", 9) != 0) goto loc_invalid;
+  name = txn.payload + 9;
+  args = stripstr(name, "\",\"Args\":[");
+  if (!args) {
+    stripstr(name, "\"}");
+  }
+
+  *pfunction_name = name;
+  *pargs = args;
+
+  return true;
+loc_invalid:
+  return false;
+}
 
 static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){
   unsigned int pos = 1;
+  char *function_name, *args;
 
 
   if (is_first) {
@@ -311,49 +342,61 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
     break;
 
-  case TXN_CALL: {
-    char *name, *args;
+  case TXN_CALL:
+
+    pos = 3;
 
     /* parse the payload */
     /* {"Name":"some_function","Args":[<parameters>]} */
 
-    pos = 3;
-
-    if (strncmp(txn.payload, "{\"Name\":\"", 9) != 0) goto loc_invalid;
-    name = txn.payload + 9;
-    if (txn.payload[txn.payload_len-2] != ']' ||
-        txn.payload[txn.payload_len-1] != '}' ) goto loc_invalid;
-    txn.payload[txn.payload_len-2] = 0;
-    args = stripstr(name, "\",\"Args\":[");
+    if (parse_payload(&function_name, &args) == false) goto loc_invalid;
     if (!args) goto loc_invalid;
 
     /* set the screens to be displayed */
 
     num_screens = 0;
     add_screens("Contract", recipient_address, EncodedAddressLength, false);  // strlen(recipient_address);
-    add_screens("Function", name, strlen(name), true);
+    add_screens("Function", function_name, strlen(function_name), true);
     add_screens("Parameters", args, strlen(args), true);
 
     break;
-  }
+
   case TXN_GOVERNANCE:
 
     pos = 4;
 
-    if (!txn.payload || txn.payload_len==0) goto loc_invalid;
-    txn.payload[txn.payload_len] = 0; /* null terminator used by strcmp */
+    /* parse the payload */
+    if (parse_payload(&function_name, &args) == false) goto loc_invalid;
 
     if (txn.is_system) {
 
-      if (strcmp(txn.payload,"{\"Name\":\"v1stake\"}") == 0) {
+      // {"Name":"v1stake"}
+      if (strcmp(function_name,"v1stake") == 0) {
 
         num_screens = 0;
         add_screens("Stake", amount_str, strlen(amount_str), true);
 
-      } else if (strcmp(txn.payload,"{\"Name\":\"v1unstake\"}") == 0) {
+      // {"Name":"v1unstake"}
+      } else if (strcmp(function_name,"v1unstake") == 0) {
 
         num_screens = 0;
         add_screens("Unstake", amount_str, strlen(amount_str), true);
+
+      // {"Name":"v1voteBP","Args":[<peer IDs>]}
+      } else if (strcmp(function_name,"v1voteBP") == 0) {
+
+        if (!args) goto loc_invalid;
+
+        num_screens = 0;
+        add_screens("BP Vote", args, strlen(args), true);
+
+      // {"Name":"v1voteDAO","Args":[<DAO ID>,<candidate>]}
+      } else if (strcmp(function_name,"v1voteDAO") == 0) {
+
+        if (!args) goto loc_invalid;
+
+        num_screens = 0;
+        add_screens("DAO Vote", args, strlen(args), true);
 
       } else {
         pos = 5;
