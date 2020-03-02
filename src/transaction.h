@@ -412,18 +412,16 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
       pos = 7;
 
+      if (!args) goto loc_invalid;
+
       // {"Name":"v1createName","Args":[<a name string>]}
       if (strcmp(function_name,"v1createName") == 0) {
-
-        if (!args) goto loc_invalid;
 
         num_screens = 0;
         add_screens("Create Name", args, strlen(args), true);
 
       // {"Name":"v1updateName","Args":[<a name string>, <new owner address>]}
       } else if (strcmp(function_name,"v1updateName") == 0) {
-
-        if (!args) goto loc_invalid;
 
         num_screens = 0;
         add_screens("Update Name", args, strlen(args), true);
