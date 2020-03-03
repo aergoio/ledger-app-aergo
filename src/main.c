@@ -381,15 +381,17 @@ static const bagl_element_t *io_seproxyhal_touch_exit(const bagl_element_t *e) {
 static const bagl_element_t *io_seproxyhal_touch_approve(const bagl_element_t *e) {
     unsigned int tx = 0;
 
-    // which private key to use?
+    /* copy the transaction hash */
+    memcpy(G_io_apdu_buffer, txn_hash, 32);
 
     /* create a signature for the transaction hash */
     tx = cx_ecdsa_sign((void*) &privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
                        txn_hash, sizeof txn_hash,
-                       G_io_apdu_buffer, sizeof G_io_apdu_buffer, NULL);
-    G_io_apdu_buffer[0] &= 0xF0; // discard the parity information
+                       G_io_apdu_buffer+32, sizeof(G_io_apdu_buffer)-32, NULL);
+    G_io_apdu_buffer[32] &= 0xF0; // discard the parity information
 
     if (tx > 0) {
+      tx += 32; /* the txn hash */
       G_io_apdu_buffer[tx++] = 0x90;
       G_io_apdu_buffer[tx++] = 0x00;
     } else {
