@@ -9,7 +9,7 @@
 #define APP_VERSION_MAJOR   1
 #define APP_VERSION_MINOR   0
 
-#define CLA 0x80
+#define CLA 0xAE
 #define INS_GET_APP_VERSION 0x01
 #define INS_GET_PUBLIC_KEY  0x02
 #define INS_SIGN_TXN        0x04
