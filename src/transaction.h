@@ -288,7 +288,7 @@ loc_invalid:
 **  {"Name":"some_function"}
 */
 static bool parse_payload(char **pfunction_name, char **pargs) {
-  char *name, *args;
+  char *name, *args, last_char;
 
 // is the payload completely downloaded?
 
@@ -300,9 +300,13 @@ static bool parse_payload(char **pfunction_name, char **pargs) {
   if (strncmp(txn.payload, "{\"Name\":\"", 9) != 0) goto loc_invalid;
   name = txn.payload + 9;
   args = stripstr(name, "\",\"Args\":[");
-  if (!args) {
-    stripstr(name, "\"}");
+  if (args) {
+    last_char = ']';
+  } else {
+    last_char = '"';
   }
+  if (txn.payload[txn.payload_len-2] != last_char) goto loc_invalid;
+  txn.payload[txn.payload_len-2] = 0;
 
   *pfunction_name = name;
   *pargs = args;

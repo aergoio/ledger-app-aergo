@@ -489,7 +489,7 @@ static void sample_main(void) {
 
                 case INS_GET_PUBLIC_KEY: {
                     unsigned char *path;
-                    unsigned int len;
+                    unsigned char len;
 
                     len = G_io_apdu_buffer[4];
                     path = G_io_apdu_buffer + 5;
