@@ -78,7 +78,7 @@ static void request_next_part();
 static void on_new_transaction_part(unsigned char *text, unsigned int len, bool is_first, bool is_last);
 static void display_text_part(void);
 
-static bool derive_keys(unsigned char *bip32Path);
+static bool derive_keys(unsigned char *bip32Path, unsigned char bip32PathLength);
 
 #define MAX_BIP32_PATH 10
 
@@ -491,14 +491,10 @@ static void sample_main(void) {
                     unsigned char *path;
                     unsigned int len;
 
-                    // check the message length
                     len = G_io_apdu_buffer[4];
-                    if (len < 5) {  /* len (1 byte) + 1 integer */
-                        THROW(0x6700);  // wrong length
-                    }
                     path = G_io_apdu_buffer + 5;
 
-                    if (derive_keys(path) == false) {
+                    if (derive_keys(path,len) == false) {
                         THROW(0x6700);  // wrong length
                     }
 
@@ -852,18 +848,19 @@ unsigned char io_event(unsigned char channel) {
 #include "transaction.h"
 
 
-static bool derive_keys(unsigned char *bip32Path) {
-    unsigned char bip32PathLength;
+static bool derive_keys(unsigned char *bip32Path, unsigned char bip32PathLength) {
     unsigned int  path[MAX_BIP32_PATH];
     unsigned char i;
     unsigned char privateKeyData[64];
 
-    bip32PathLength = bip32Path[0];
-    if ((bip32PathLength < 1) ||
-        (bip32PathLength > MAX_BIP32_PATH)) {
-        THROW(0x6a80);  //INVALID_PARAMETER);
+    /* the length must be a multiple of 4 */
+    if ((bip32PathLength & 0x03) != 0) {
+        return false;
     }
-    bip32Path++;
+    bip32PathLength /= 4;
+    if (bip32PathLength < 1 || bip32PathLength > MAX_BIP32_PATH) {
+        return false;
+    }
     for (i = 0; i < bip32PathLength; i++) {
         path[i] = U4BE(bip32Path, 0);
         bip32Path += 4;
@@ -876,12 +873,6 @@ static bool derive_keys(unsigned char *bip32Path) {
     cx_ecfp_generate_pair(CX_CURVE_256K1, &publicKey, &privateKey, 1);
 
     publicKey.W[0] = ((publicKey.W[64] & 1) ? 0x03 : 0x02);
-
-// it could also return the address as raw 33 bytes, not encoded
-// and only encode it when displaying on the device
-
-//    length = encode_base58(publicKey.W, 33, address, sizeof(address));
-//    address[length] = '\0';
 
     memset(privateKeyData, 0, sizeof privateKeyData);
     return true;
