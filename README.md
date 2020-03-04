@@ -2,7 +2,7 @@
 
 Aergo application for Ledger Nano S
 
-![ledger-app-aergo](https://user-images.githubusercontent.com/7624275/73798570-ec639280-4791-11ea-8a1f-7cb3ea836ec8.jpg)
+![ledger-app-aergo](https://user-images.githubusercontent.com/7624275/75844801-f048fb80-5db5-11ea-9957-3016f3970ccc.jpg)
 
 The most secure method to protect your private key(s)
 
