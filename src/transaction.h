@@ -345,7 +345,7 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
     num_screens = 0;
     add_screens("Amount", amount_str, strlen(amount_str), true);
-    add_screens("Recipient", recipient_address, EncodedAddressLength, false);  // strlen(recipient_address);
+    add_screens("Recipient", recipient_address, strlen(recipient_address), false);
 
     break;
 
@@ -362,7 +362,7 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     /* set the screens to be displayed */
 
     num_screens = 0;
-    add_screens("Contract", recipient_address, EncodedAddressLength, false);  // strlen(recipient_address);
+    add_screens("Contract", recipient_address, strlen(recipient_address), false);
     add_screens("Function", function_name, strlen(function_name), true);
     add_screens("Parameters", args, strlen(args), true);
 
