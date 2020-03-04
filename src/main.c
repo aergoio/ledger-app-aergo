@@ -20,10 +20,6 @@
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
-// if attacker sends only new lines, they are converted to ' | ' so the buffer
-// may hold sufficient space to handle them.
-//static unsigned char to_display[IO_SEPROXYHAL_BUFFER_SIZE_B * 3 + MAX_CHARS_PER_LINE + 1];
-
 struct items {
   char *title;
   char *value;
@@ -510,9 +506,7 @@ static void sample_main(void) {
                     unsigned int len;
                     bool is_first = false;
                     bool is_last = false;
-//                    if (G_io_apdu_buffer[2] & !(P1_FIRST | P1_LAST) != 0) {
-//                        THROW(0x6A86);
-//                    }
+
                     if (G_io_apdu_buffer[2] & P1_FIRST) {
                         is_first = true;
                     }
@@ -569,70 +563,6 @@ return_to_dashboard:
 void io_seproxyhal_display(const bagl_element_t *element) {
     io_seproxyhal_display_default((bagl_element_t *)element);
 }
-
-#if 0
-static void on_new_transaction_part(unsigned char *text, unsigned int len) {
-    unsigned int i, dest;
-
-    is_last_txn_part = (G_io_apdu_buffer[2] == P1_LAST);
-
-    if (uiState == UI_IDLE || last_part_displayed) {
-        is_first_txn_part = 1;
-    } else {
-        is_first_txn_part = 0;
-    }
-    last_part_displayed = is_last_txn_part;
-
-    if (is_first_txn_part) {
-        cx_sha256_init(&hash);
-    }
-    // Update the hash with this part
-    cx_hash(&hash.header, 0, text, len, NULL, 0);
-
-    if (is_first_txn_part) {
-        dest = 0;
-    } else {
-        memcpy(to_display, &to_display[len_to_display-MAX_CHARS_PER_LINE+1], MAX_CHARS_PER_LINE-1);
-        dest = MAX_CHARS_PER_LINE - 1;
-    }
-
-#if 0
-    // do not show trailing line breaks
-    if (is_last_txn_part) {
-        for (i=len-1; i>=0; i--) {
-            WIDE char c = text[i];
-            if (c == '\n' || c == '\r') {
-                len--;
-            }
-        }
-    }
-#endif
-
-    for (i=0; i<len; i++) {
-        unsigned char c = text[i];
-        if (c == '\n' || c == '\r') {
-            to_display[dest++] = ' ';
-            to_display[dest++] = '|';
-            to_display[dest++] = ' ';
-        // an attacker could use many backspace chars to hide a command
-        } else if (c == 0x08) {
-            to_display[dest++] = '!';
-        } else {
-            to_display[dest++] = c;
-        }
-    }
-
-    len_to_display = dest;
-
-
-
-
-    display_screen(0);
-
-
-}
-#endif
-
 
 static void add_screens(char *title, char *value, unsigned int len, bool scroll_value) {
   int i;
@@ -801,11 +731,10 @@ unsigned char io_event(unsigned char channel) {
         if (UX_DISPLAYED()) {
             // perform action after screen elements have been displayed
             if (uiState == UI_FIRST || uiState == UI_TEXT) {
-              //if (is_first_txn_part && current_text_pos <= 1) {
               if (current_text_pos <= 1) {
                 UX_CALLBACK_SET_INTERVAL(2000);
-              } else if (text_part_completely_displayed()) {  // && is_last_txn_part) {
-                //UX_CALLBACK_SET_INTERVAL(2000);
+              } else if (text_part_completely_displayed()) {
+                // do nothing
               } else {
                 UX_CALLBACK_SET_INTERVAL(200);
               }
