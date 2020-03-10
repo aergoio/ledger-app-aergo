@@ -158,16 +158,20 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
 
   // amount
   if (len < 1) goto loc_incomplete;
-  if (*ptr != 0x22) goto loc_invalid;
-  ptr++; len--;
-  size = decode_varint(ptr, len, &str_len);
-  if (size == 0 || len - size < str_len) goto loc_incomplete2;
-  ptr += size;
-  len -= size;
-  if (str_len > 40) goto loc_invalid;
-  txn.amount = ptr;
-  ptr += str_len;
-  len -= str_len;
+  if (*ptr == 0x22) {
+    ptr++; len--;
+    size = decode_varint(ptr, len, &str_len);
+    if (size == 0 || len - size < str_len) goto loc_incomplete2;
+    ptr += size;
+    len -= size;
+    if (str_len > 40) goto loc_invalid;
+    txn.amount = ptr;
+    ptr += str_len;
+    len -= str_len;
+  } else {
+    txn.amount = (unsigned char *) "\0";
+    str_len = 1;
+  }
 
   sha256_add(txn.amount, str_len);
 
@@ -197,12 +201,15 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
 
   // gasLimit
   if (len < 1) goto loc_incomplete;
-  if (*ptr != 0x30) goto loc_invalid;
-  ptr++; len--;
-  size = decode_varint(ptr, len, &txn.gasLimit);
-  if (size == 0) goto loc_incomplete2;
-  ptr += size;
-  len -= size;
+  if (*ptr == 0x30) {
+    ptr++; len--;
+    size = decode_varint(ptr, len, &txn.gasLimit);
+    if (size == 0) goto loc_incomplete2;
+    ptr += size;
+    len -= size;
+  } else {
+    txn.gasLimit = 0;
+  }
 
   sha256_add(&txn.gasLimit, 8);
 
@@ -231,13 +238,16 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
 
   // type
   if (len < 1) goto loc_incomplete;
-  if (*ptr != 0x40) goto loc_invalid;
-  ptr++; len--;
-  size = decode_varint(ptr, len, &val64);
-  if (size == 0) goto loc_incomplete2;
-  ptr += size;
-  len -= size;
-  txn.type = val64; /* convert to 32-bit */
+  if (*ptr == 0x40) {
+    ptr++; len--;
+    size = decode_varint(ptr, len, &val64);
+    if (size == 0) goto loc_incomplete2;
+    ptr += size;
+    len -= size;
+    txn.type = val64; /* convert it to 32-bit */
+  } else {
+    txn.type = 0;
+  }
   txn_type = txn.type;
 
   sha256_add(&txn.type, 4);
