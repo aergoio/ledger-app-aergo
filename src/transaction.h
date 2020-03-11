@@ -77,6 +77,8 @@ static char * stripstr(char *mainstr, char *separator) {
 
 #define sha256_add(ptr,len) cx_hash(&hash.header,0,(unsigned char*)ptr,len,NULL,0)
 
+static bool parse_last_part(unsigned char *buf, unsigned int len);
+
 static bool parse_first_part(unsigned char *buf, unsigned int len){
   unsigned char *ptr;
   unsigned int size;
@@ -197,6 +199,36 @@ static bool parse_first_part(unsigned char *buf, unsigned int len){
     sha256_add(txn.payload, str_len);
   }
 
+
+
+  return parse_last_part(ptr, len);
+
+
+loc_incomplete2:
+  ptr--;
+  len++;
+loc_incomplete:
+
+//  ...
+
+  THROW(0x6955);  // temporary
+
+  return false;
+
+loc_invalid:
+
+  THROW(0x6720 + pos);  // invalid data
+
+}
+
+static bool parse_last_part(unsigned char *buf, unsigned int len){
+  unsigned char *ptr;
+  unsigned int size;
+  uint64_t str_len, val64;
+  unsigned int pos;
+
+  ptr = buf;
+
   pos = 6;
 
   // gasLimit
@@ -287,7 +319,6 @@ loc_incomplete:
 loc_invalid:
 
   THROW(0x6720 + pos);  // invalid data
-//THROW(0x6984);        // invalid data
 
 }
 
@@ -517,6 +548,5 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 loc_invalid:
 
   THROW(0x6740 + pos);  // invalid data
-//THROW(0x6984);        // invalid data
 
 }
