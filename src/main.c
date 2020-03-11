@@ -41,8 +41,10 @@ static unsigned char is_first_txn_part; // if this is the first part of a transa
 static unsigned char is_last_txn_part;
 //static unsigned char last_part_displayed;
 
-static cx_sha256_t hash;
+bool txn_is_complete;
+bool has_partial_payload;
 
+static cx_sha256_t hash;
 unsigned char txn_hash[32];
 
 // UI currently displayed

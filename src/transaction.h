@@ -22,6 +22,8 @@ struct txn {
   unsigned char *amount;        // variable-length big integer
            char *payload;
   unsigned int   payload_len;
+  unsigned int   payload_part_offset;
+  unsigned int   payload_part_len;
   uint64_t gasLimit;
   unsigned char *gasPrice;      // variable-length big integer
   uint32_t type;
@@ -77,6 +79,7 @@ static char * stripstr(char *mainstr, char *separator) {
 
 #define sha256_add(ptr,len) cx_hash(&hash.header,0,(unsigned char*)ptr,len,NULL,0)
 
+static bool parse_payload_part(unsigned char *ptr, unsigned int len);
 static bool parse_last_part(unsigned char *ptr, unsigned int len);
 
 static bool parse_first_part(unsigned char *ptr, unsigned int len){
@@ -85,6 +88,9 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
   unsigned int pos;
 
   memset(&txn, 0, sizeof(struct txn));
+
+  txn_is_complete = false;
+  has_partial_payload = false;
 
   // initialize hash
   cx_sha256_init(&hash);
@@ -189,19 +195,28 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
     if (size == 0) goto loc_incomplete2;
     ptr += size;
     len -= size;
-    if (str_len > 140) goto loc_invalid;
-    if (len < str_len) goto loc_incomplete;
+    if (str_len > 0x7FFFFFFF) goto loc_invalid;
     txn.payload = (char*) ptr;
     txn.payload_len = str_len;
-    ptr += str_len;
-    len -= str_len;
+    txn.payload_part_offset = 0;
+    if (len < str_len) {
+      has_partial_payload = true;
+      txn.payload_part_len = len;
+    } else {
+      txn.payload_part_len = str_len;
+    }
+    ptr += txn.payload_part_len;
+    len -= txn.payload_part_len;
 
-    sha256_add(txn.payload, str_len);
+    sha256_add(txn.payload, txn.payload_part_len);
   }
 
 
-
-  return parse_last_part(ptr, len);
+  if (has_partial_payload) {
+    return true;
+  } else {
+    return parse_last_part(ptr, len);
+  }
 
 
 loc_incomplete2:
@@ -209,15 +224,42 @@ loc_incomplete2:
   len++;
 loc_incomplete:
 
-//  ...
-
-  THROW(0x6955);  // temporary
+  THROW(0x6955);  // the transaction is incomplete
 
   return false;
 
 loc_invalid:
 
   THROW(0x6720 + pos);  // invalid data
+
+}
+
+static bool parse_payload_part(unsigned char *ptr, unsigned int len){
+
+//  if (len < 1) goto loc_incomplete;
+
+  txn.payload = (char*) ptr;
+
+  txn.payload_part_offset += txn.payload_part_len;
+
+  if (txn.payload_part_offset + len < txn.payload_len) {
+    has_partial_payload = true;
+    txn.payload_part_len = len;
+  } else {
+    has_partial_payload = false;
+    txn.payload_part_len = txn.payload_len - txn.payload_part_offset;
+  }
+
+  sha256_add(txn.payload, txn.payload_part_len);
+
+  ptr += txn.payload_part_len;
+  len -= txn.payload_part_len;
+
+  if (has_partial_payload) {
+    return true;
+  } else {
+    return parse_last_part(ptr, len);
+  }
 
 }
 
@@ -299,6 +341,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   sha256_add(txn.chainId, 32);
 
 
+  txn_is_complete = true;
 
   return true;
 
@@ -306,11 +349,7 @@ loc_incomplete2:
   ptr--;
   len++;
 loc_incomplete:
-
-//  ...
-
-  THROW(0x6955);  // temporary
-
+  /* incomplete transaction */
   return false;
 
 loc_invalid:
@@ -358,7 +397,6 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
   unsigned int pos = 1;
   char *function_name, *args;
 
-
   if (is_first) {
     // check minimum size
     if (len < 60) {
@@ -366,14 +404,24 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     }
   }
 
+  if (is_first) {
+    parse_first_part(buf, len);
+  } else if (has_partial_payload) {
+    parse_payload_part(buf, len);
+  } else {
+    parse_last_part(buf, len);
+  }
 
-  parse_first_part(buf, len);
+  if (is_last && !txn_is_complete) {
+    pos = 2;
+    goto loc_invalid;
+  }
 
-
+// if (is_last) {
   /* calculate the transaction hash */
   memset(txn_hash, 0, sizeof txn_hash);
   cx_hash(&hash.header, CX_LAST, NULL, 0, txn_hash, sizeof txn_hash);
-
+// }
 
   /* determine what to display according to the transaction type */
   switch (txn_type) {
