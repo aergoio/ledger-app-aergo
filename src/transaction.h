@@ -77,17 +77,17 @@ static char * stripstr(char *mainstr, char *separator) {
 
 #define sha256_add(ptr,len) cx_hash(&hash.header,0,(unsigned char*)ptr,len,NULL,0)
 
-static bool parse_last_part(unsigned char *buf, unsigned int len);
+static bool parse_last_part(unsigned char *ptr, unsigned int len);
 
-static bool parse_first_part(unsigned char *buf, unsigned int len){
-  unsigned char *ptr;
+static bool parse_first_part(unsigned char *ptr, unsigned int len){
   unsigned int size;
-  uint64_t str_len, val64;
+  uint64_t str_len;
   unsigned int pos;
 
   memset(&txn, 0, sizeof(struct txn));
 
-  ptr = buf;
+  // initialize hash
+  cx_sha256_init(&hash);
 
   pos = 1;
 
@@ -221,13 +221,10 @@ loc_invalid:
 
 }
 
-static bool parse_last_part(unsigned char *buf, unsigned int len){
-  unsigned char *ptr;
+static bool parse_last_part(unsigned char *ptr, unsigned int len){
   unsigned int size;
   uint64_t str_len, val64;
   unsigned int pos;
-
-  ptr = buf;
 
   pos = 6;
 
@@ -367,8 +364,6 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     if (len < 60) {
       THROW(0x6700);  // wrong length
     }
-    // initialize hash
-    cx_sha256_init(&hash);
   }
 
 
