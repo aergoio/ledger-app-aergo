@@ -223,13 +223,9 @@ loc_incomplete2:
   ptr--;
   len++;
 loc_incomplete:
-
   THROW(0x6955);  // the transaction is incomplete
 
-  return false;
-
 loc_invalid:
-
   THROW(0x6720 + pos);  // invalid data
 
 }
@@ -343,6 +339,10 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
 
   txn_is_complete = true;
 
+  /* calculate the transaction hash */
+  memset(txn_hash, 0, sizeof txn_hash);
+  cx_hash(&hash.header, CX_LAST, NULL, 0, txn_hash, sizeof txn_hash);
+
   return true;
 
 loc_incomplete2:
@@ -353,7 +353,6 @@ loc_incomplete:
   return false;
 
 loc_invalid:
-
   THROW(0x6720 + pos);  // invalid data
 
 }
@@ -393,35 +392,9 @@ loc_invalid:
   return false;
 }
 
-static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){
+static void display_transaction() {
   unsigned int pos = 1;
   char *function_name, *args;
-
-  if (is_first) {
-    // check minimum size
-    if (len < 60) {
-      THROW(0x6700);  // wrong length
-    }
-  }
-
-  if (is_first) {
-    parse_first_part(buf, len);
-  } else if (has_partial_payload) {
-    parse_payload_part(buf, len);
-  } else {
-    parse_last_part(buf, len);
-  }
-
-  if (is_last && !txn_is_complete) {
-    pos = 2;
-    goto loc_invalid;
-  }
-
-// if (is_last) {
-  /* calculate the transaction hash */
-  memset(txn_hash, 0, sizeof txn_hash);
-  cx_hash(&hash.header, CX_LAST, NULL, 0, txn_hash, sizeof txn_hash);
-// }
 
   /* determine what to display according to the transaction type */
   switch (txn_type) {
@@ -585,11 +558,36 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
   /* display the first screen */
   display_screen(0);
 
-
   return;
 
 loc_invalid:
-
   THROW(0x6740 + pos);  // invalid data
+
+}
+
+static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){
+
+  /* check the minimum transaction size */
+  if (is_first && len < 60) {
+    THROW(0x6700);  // wrong length
+  }
+
+  if (is_first) {
+    parse_first_part(buf, len);
+  } else if (has_partial_payload) {
+    parse_payload_part(buf, len);
+  } else {
+    parse_last_part(buf, len);
+  }
+
+  if (is_last && !txn_is_complete) {
+    THROW(0x6740);  // invalid data
+  }
+
+  if (is_first) {
+    display_transaction();
+  //} else {
+  //  display_txn_part();
+  }
 
 }
