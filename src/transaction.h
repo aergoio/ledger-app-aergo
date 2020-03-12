@@ -363,29 +363,46 @@ loc_invalid:
 **  {"Name":"some_function","Args":[<parameters>]}
 **  {"Name":"some_function"}
 */
-static bool parse_payload(char **pfunction_name, char **pargs) {
+static bool parse_payload(char **pfunction_name, char **pargs, unsigned int *pargs_len) {
   char *name, *args, last_char;
-
-// is the payload completely downloaded?
+  unsigned int len, args_len;
 
   if (!txn.payload || txn.payload_len==0) goto loc_invalid;
-  if (txn.payload[txn.payload_len-1] != '}') goto loc_invalid;
 
-  txn.payload[txn.payload_len] = 0; /* null terminator used by strcmp and stripstr */
+  /* is the payload completely downloaded? */
+  if (has_partial_payload) {
+    len = txn.payload_part_len;
+  } else {
+    len = txn.payload_len;
+  }
+
+  txn.payload[len] = 0; /* null terminator used by strcmp and stripstr */
 
   if (strncmp(txn.payload, "{\"Name\":\"", 9) != 0) goto loc_invalid;
   name = txn.payload + 9;
   args = stripstr(name, "\",\"Args\":[");
-  if (args) {
-    last_char = ']';
+
+  if (has_partial_payload) {
+    args_len = txn.payload + len - args;
   } else {
-    last_char = '"';
+    if (args) {
+      last_char = ']';
+    } else {
+      last_char = '"';
+    }
+    if (txn.payload[txn.payload_len-1] != '}') goto loc_invalid;
+    if (txn.payload[txn.payload_len-2] != last_char) goto loc_invalid;
+    txn.payload[txn.payload_len-2] = 0;
+    if (args) {
+      args_len = strlen(args);
+    } else {
+      args_len = 0;
+    }
   }
-  if (txn.payload[txn.payload_len-2] != last_char) goto loc_invalid;
-  txn.payload[txn.payload_len-2] = 0;
 
   *pfunction_name = name;
   *pargs = args;
+  *pargs_len = args_len;
 
   return true;
 loc_invalid:
@@ -395,6 +412,7 @@ loc_invalid:
 static void display_transaction() {
   unsigned int pos = 1;
   char *function_name, *args;
+  unsigned int size;
 
   /* determine what to display according to the transaction type */
   switch (txn_type) {
@@ -413,7 +431,7 @@ static void display_transaction() {
     /* parse the payload */
     /* {"Name":"some_function","Args":[<parameters>]} */
 
-    if (parse_payload(&function_name, &args) == false) goto loc_invalid;
+    if (parse_payload(&function_name, &args, &size) == false) goto loc_invalid;
     if (!args) goto loc_invalid;
 
     /* set the screens to be displayed */
@@ -421,7 +439,7 @@ static void display_transaction() {
     num_screens = 0;
     add_screens("Contract", recipient_address, strlen(recipient_address), false);
     add_screens("Function", function_name, strlen(function_name), true);
-    add_screens("Parameters", args, strlen(args), true);
+    add_screens("Parameters", args, size, true);
 
     break;
 
@@ -430,7 +448,7 @@ static void display_transaction() {
     pos = 4;
 
     /* parse the payload */
-    if (parse_payload(&function_name, &args) == false) goto loc_invalid;
+    if (parse_payload(&function_name, &args, &size) == false) goto loc_invalid;
 
     if (txn.is_system) {
 
@@ -454,7 +472,7 @@ static void display_transaction() {
         if (!args) goto loc_invalid;
 
         num_screens = 0;
-        add_screens("BP Vote", args, strlen(args), true);
+        add_screens("BP Vote", args, size, true);
 
       // {"Name":"v1voteDAO","Args":[<DAO ID>,<candidate>]}
       } else if (strcmp(function_name,"v1voteDAO") == 0) {
@@ -462,7 +480,7 @@ static void display_transaction() {
         if (!args) goto loc_invalid;
 
         num_screens = 0;
-        add_screens("DAO Vote", args, strlen(args), true);
+        add_screens("DAO Vote", args, size, true);
 
       } else {
         pos = 6;
@@ -479,13 +497,13 @@ static void display_transaction() {
       if (strcmp(function_name,"v1createName") == 0) {
 
         num_screens = 0;
-        add_screens("Create Name", args, strlen(args), true);
+        add_screens("Create Name", args, size, true);
 
       // {"Name":"v1updateName","Args":[<a name string>, <new owner address>]}
       } else if (strcmp(function_name,"v1updateName") == 0) {
 
         num_screens = 0;
-        add_screens("Update Name", args, strlen(args), true);
+        add_screens("Update Name", args, size, true);
 
       } else {
         pos = 8;
@@ -502,37 +520,37 @@ static void display_transaction() {
       if (strcmp(function_name,"appendAdmin") == 0) {
 
         num_screens = 0;
-        add_screens("Add Admin", args, strlen(args), true);
+        add_screens("Add Admin", args, size, true);
 
       // {"Name":"removeAdmin","Args":[<admin address>]}
       } else if (strcmp(function_name,"removeAdmin") == 0) {
 
         num_screens = 0;
-        add_screens("Remove Admin", args, strlen(args), true);
+        add_screens("Remove Admin", args, size, true);
 
       // {"Name":"appendConf","Args":[<config key>,<config value>]}
       } else if (strcmp(function_name,"appendConf") == 0) {
 
         num_screens = 0;
-        add_screens("Add Config", args, strlen(args), true);
+        add_screens("Add Config", args, size, true);
 
       // {"Name":"removeConf","Args":[<config key>,<config value>]}
       } else if (strcmp(function_name,"removeConf") == 0) {
 
         num_screens = 0;
-        add_screens("Remove Config", args, strlen(args), true);
+        add_screens("Remove Config", args, size, true);
 
       // {"Name":"enableConf","Args":[<config key>,<true|false>]}
       } else if (strcmp(function_name,"enableConf") == 0) {
 
         num_screens = 0;
-        add_screens("Enable Config", args, strlen(args), true);
+        add_screens("Enable Config", args, size, true);
 
       // {"Name":"changeCluster","Args":[{"command":"add","name":"[node name]","address":"[peer address]","peerid":"[peer id]"}]}
       } else if (strcmp(function_name,"changeCluster") == 0) {
 
         num_screens = 0;
-        add_screens("Change Cluster", args, strlen(args), true);
+        add_screens("Change Cluster", args, size, true);
 
       } else {
         pos = 10;
