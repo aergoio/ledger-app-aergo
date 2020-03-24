@@ -85,7 +85,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len);
 static bool parse_first_part(unsigned char *ptr, unsigned int len){
   unsigned int size;
   uint64_t str_len;
-  unsigned int pos;
+  unsigned int pos = 0;
 
   memset(&txn, 0, sizeof(struct txn));
 
@@ -94,6 +94,11 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
 
   // initialize hash
   cx_sha256_init(&hash);
+
+  // transaction type
+  if (len < 1) goto loc_incomplete;
+  txn_type = *ptr;
+  ptr++; len--;
 
   pos = 1;
 
@@ -315,7 +320,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   } else {
     txn.type = 0;
   }
-  txn_type = txn.type;
+  if (txn.type != txn_type) goto loc_invalid;
 
   sha256_add(&txn.type, 4);
 
