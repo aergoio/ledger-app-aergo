@@ -9,7 +9,7 @@
 #define APP_VERSION_MAJOR   1
 #define APP_VERSION_MINOR   0
 
-#define CLA 0xAE
+#define CLA      0xAE
 #define INS_GET_APP_VERSION 0x01
 #define INS_GET_PUBLIC_KEY  0x02
 #define INS_SIGN_TXN        0x04
@@ -19,6 +19,10 @@
 #define MAX_CHARS_PER_LINE 13  // some strings do not appear entirely on the screen if bigger than this
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
+
+// if attacker sends only new lines, they are converted to ' | ' so the buffer
+// may hold sufficient space to handle them.
+static char to_display[IO_SEPROXYHAL_BUFFER_SIZE_B * 3 + MAX_CHARS_PER_LINE + 1];
 
 struct items {
   char *title;
@@ -37,9 +41,6 @@ static char line2[20];
 static char         *text_to_display;
 static unsigned int  len_to_display;
 static unsigned int  current_text_pos;  // current position in the text to display
-static unsigned char is_first_txn_part; // if this is the first part of a transaction
-static unsigned char is_last_txn_part;
-//static unsigned char last_part_displayed;
 
 bool txn_is_complete;
 bool has_partial_payload;
@@ -691,6 +692,44 @@ static void display_text_part() {
     current_text_pos++;
 }
 
+static void update_display_buffer(char *text, unsigned int len) {
+    unsigned int i, dest;
+
+    if (len_to_display > MAX_CHARS_PER_LINE) {
+        memcpy(to_display, &to_display[len_to_display-MAX_CHARS_PER_LINE+1], MAX_CHARS_PER_LINE-1);
+        dest = MAX_CHARS_PER_LINE - 1;
+    } else {
+        dest = 0;
+    }
+
+    for (i=0; i<len; i++) {
+        unsigned char c = text[i];
+        if (c == '\n' || c == '\r') {
+            to_display[dest++] = ' ';
+            to_display[dest++] = '|';
+            to_display[dest++] = ' ';
+        } else if (c == 0x08) { /* backspace should not be hidden */
+            to_display[dest++] = '?';
+        } else if (c > 0x7F) { /* non-ascii chars */
+            to_display[dest++] = '?';  // later: read utf-8 chars
+        } else {
+            to_display[dest++] = c;
+        }
+    }
+
+    len_to_display = dest;
+
+}
+
+static void display_updated_buffer() {
+
+    current_text_pos = 0;
+    display_text_part();
+
+    UX_REDISPLAY();
+
+}
+
 static void ui_idle(void) {
     uiState = UI_IDLE;
     UX_DISPLAY(bagl_ui_idle_nanos, NULL);
@@ -751,7 +790,11 @@ unsigned char io_event(unsigned char channel) {
           if (UX_ALLOWED) {
             if (uiState == UI_FIRST || uiState == UI_TEXT) {
                 if (text_part_completely_displayed()) {
-                    // do nothing
+                    if (!txn_is_complete) {
+                      request_next_part();
+                    } else {
+                      // do nothing
+                    }
                 } else {
                     // scroll the text
                     display_text_part();

@@ -570,8 +570,11 @@ static void display_transaction() {
 
     if (!txn.payload || txn.payload_len==0) goto loc_invalid;
 
+    len_to_display = 0;
+    update_display_buffer(txn.payload, txn.payload_part_len);
+
     num_screens = 0;
-    add_screens("New Contract", txn.payload, txn.payload_part_len, true);
+    add_screens("New Contract", to_display, len_to_display, true);
 
     break;
 
@@ -594,7 +597,15 @@ loc_invalid:
 
 }
 
+static void display_txn_part() {
+
+  update_display_buffer(txn.payload, txn.payload_part_len);
+  display_updated_buffer();
+
+}
+
 static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){
+  bool is_payload_part = has_partial_payload;
 
   /* check the minimum transaction size */
   if (is_first && len < 60) {
@@ -615,8 +626,8 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
   if (is_first) {
     display_transaction();
-  //} else {
-  //  display_txn_part();
+  } else if (is_payload_part) {
+    display_txn_part();
   }
 
 }
