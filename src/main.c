@@ -380,6 +380,10 @@ static const bagl_element_t *io_seproxyhal_touch_exit(const bagl_element_t *e) {
 static const bagl_element_t *io_seproxyhal_touch_approve(const bagl_element_t *e) {
     unsigned int tx = 0;
 
+    if (!txn_is_complete) {
+      THROW(0x6986);
+    }
+
     /* copy the transaction hash */
     memcpy(G_io_apdu_buffer, txn_hash, 32);
 
