@@ -773,9 +773,13 @@ unsigned char io_event(unsigned char channel) {
             // perform action after screen elements have been displayed
             if (uiState == UI_FIRST || uiState == UI_TEXT) {
               if (current_text_pos <= 1) {
-                UX_CALLBACK_SET_INTERVAL(2000);
+                UX_CALLBACK_SET_INTERVAL(1500);
               } else if (text_part_completely_displayed()) {
-                // do nothing
+                if (!txn_is_complete) {
+                  UX_CALLBACK_SET_INTERVAL(200);
+                } else {
+                  // do nothing
+                }
               } else {
                 UX_CALLBACK_SET_INTERVAL(200);
               }
