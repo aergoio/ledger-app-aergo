@@ -580,7 +580,18 @@ static void display_transaction() {
 
     break;
 
-  //case TXN_REDEPLOY:
+  case TXN_REDEPLOY:
+
+    pos = 13;
+
+    if (!txn.payload || txn.payload_len==0) goto loc_invalid;
+
+    num_screens = 0;
+    add_screens("Recipient", recipient_address, strlen(recipient_address), false);
+    add_screens("New Contract", txn.payload, txn.payload_part_len, true);
+
+    break;
+
   //case TXN_NORMAL:
   //case TXN_FEEDELEGATION:
   default:
