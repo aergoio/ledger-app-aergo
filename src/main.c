@@ -24,6 +24,7 @@ struct items {
   char *title;
   char *value;
   unsigned int vsize;
+  bool in_hex;
 };
 
 static struct items screens[8];
@@ -117,6 +118,15 @@ static const unsigned char UTF8Trans1[] = {
   if( c<0x80                                               \
       || (c&0xFFFFF800)==0xD800                            \
       || (c&0xFFFFFFFE)==0xFFFE ){ c = 0xFFFD; }           \
+
+/*
+** Array for converting from half-bytes (nybbles) into ASCII hex
+** digits.
+*/
+static const char hexdigits[] = {
+  '0', '1', '2', '3', '4', '5', '6', '7',
+  '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // IDLE SCREEN
@@ -608,10 +618,14 @@ void io_seproxyhal_display(const bagl_element_t *element) {
     io_seproxyhal_display_default((bagl_element_t *)element);
 }
 
+static void clear_screens() {
+  num_screens = 0;
+  memset(screens, 0, sizeof(screens));
+  last_utf8_char = 0;
+}
+
 static void add_screens(char *title, char *value, unsigned int len, bool scroll_value) {
   int i;
-
-  if (num_screens == 0) last_utf8_char = 0;
 
   if (scroll_value) {
 
@@ -771,13 +785,18 @@ static bool update_display_buffer() {
         unsigned int c = 0;
         bool is_utf8 = false;
 
-        if (last_utf8_char != 0) {
-          c = last_utf8_char;
-          last_utf8_char = 0;
-          READ_REMAINING_UTF8(zIn, zEnd, c);
+        if (screens[current_screen].in_hex) {
+          c = *(zIn++);
         } else {
-          READ_UTF8(zIn, zEnd, c);
+          if (last_utf8_char != 0) {
+            c = last_utf8_char;
+            last_utf8_char = 0;
+            READ_REMAINING_UTF8(zIn, zEnd, c);
+          } else {
+            READ_UTF8(zIn, zEnd, c);
+          }
         }
+
         current_text_pos = zIn - text_to_display;
 
         /* do we have a partial UTF8 char at the end? */
@@ -786,7 +805,10 @@ static bool update_display_buffer() {
           return false;
         }
 
-        if (c > 0x7F) { /* non-ascii chars */
+        if (screens[current_screen].in_hex) {
+            line2b[line2_size++] = hexdigits[(c >> 4) & 0xf];
+            line2b[line2_size++] = hexdigits[c & 0xf];
+        } else if (c > 0x7F) { /* non-ascii chars */
             line2b[line2_size++] = '\\';
             line2b[line2_size++] = 'u';
             snprintf(&line2b[line2_size], sizeof(line2b) - line2_size, "%X", c);
