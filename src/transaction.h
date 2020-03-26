@@ -575,11 +575,8 @@ static void display_transaction() {
 
     if (!txn.payload || txn.payload_len==0) goto loc_invalid;
 
-    len_to_display = 0;
-    update_display_buffer(txn.payload, txn.payload_part_len);
-
     num_screens = 0;
-    add_screens("New Contract", to_display, len_to_display, true);
+    add_screens("New Contract", txn.payload, txn.payload_part_len, true);
 
     break;
 
@@ -604,7 +601,11 @@ loc_invalid:
 
 static void display_txn_part() {
 
-  update_display_buffer(txn.payload, txn.payload_part_len);
+  //update_screen_content(txn.payload, txn.payload_part_len);
+
+  screens[num_screens-1].value = txn.payload;
+  screens[num_screens-1].vsize = txn.payload_part_len;
+
   display_updated_buffer();
 
 }
