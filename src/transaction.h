@@ -592,7 +592,27 @@ static void display_transaction() {
 
     break;
 
-  //case TXN_NORMAL:
+  case TXN_NORMAL:
+
+    pos = 14;
+
+    clear_screens();
+    if (txn.amount[0] != 0) {
+      add_screens("Amount", amount_str, strlen(amount_str), true);
+    }
+    if (recipient_address[0] != 0) {
+      add_screens("Recipient", recipient_address, strlen(recipient_address), false);
+    }
+    if (txn.payload) {
+      add_screens("Payload", txn.payload, txn.payload_part_len, true);
+    }
+
+    if (num_screens == 0) {
+      goto loc_invalid;
+    }
+
+    break;
+
   //case TXN_FEEDELEGATION:
   default:
     pos = 21;
