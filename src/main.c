@@ -58,6 +58,7 @@ ux_state_t ux;
 // private and public keys
 cx_ecfp_private_key_t privateKey;
 cx_ecfp_public_key_t  publicKey;
+static bool account_selected;
 
 // functions declarations
 
@@ -561,6 +562,10 @@ static void sample_main(void) {
                     bool is_first = false;
                     bool is_last = false;
 
+                    if (!account_selected) {
+                        THROW(0x6985);  // invalid state
+                    }
+
                     if (G_io_apdu_buffer[2] & P1_FIRST) {
                         is_first = true;
                     }
@@ -961,9 +966,11 @@ static bool derive_keys(unsigned char *bip32Path, unsigned char bip32PathLength)
     io_seproxyhal_io_heartbeat();
     cx_ecfp_generate_pair(CX_CURVE_256K1, &publicKey, &privateKey, 1);
 
+    /* convert the public key to compact format (33 bytes) */
     publicKey.W[0] = ((publicKey.W[64] & 1) ? 0x03 : 0x02);
 
     memset(privateKeyData, 0, sizeof privateKeyData);
+    account_selected = true;
     return true;
 }
 
@@ -971,6 +978,7 @@ __attribute__((section(".boot"))) int main(void) {
     // exit critical section
     __asm volatile("cpsie i");
 
+    account_selected = false;
     current_text_pos = 0;
     line2_size = 0;
     uiState = UI_IDLE;
