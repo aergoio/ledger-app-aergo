@@ -78,6 +78,7 @@ static char * stripstr(char *mainstr, char *separator) {
 }
 
 #define sha256_add(ptr,len) cx_hash(&hash.header,0,(unsigned char*)ptr,len,NULL,0)
+#define sha256_add_payload(ptr,len) cx_hash(&hash2.header,0,(unsigned char*)ptr,len,NULL,0)
 
 static bool parse_payload_part(unsigned char *ptr, unsigned int len);
 static bool parse_last_part(unsigned char *ptr, unsigned int len);
@@ -91,9 +92,13 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
 
   txn_is_complete = false;
   has_partial_payload = false;
+  is_skipping_payload = false;
 
   // initialize hash
+  memset(txn_hash, 0, sizeof txn_hash);
+  memset(payload_hash, 0, sizeof payload_hash);
   cx_sha256_init(&hash);
+  cx_sha256_init(&hash2);
 
   // transaction type
   if (len < 1) goto loc_incomplete;
@@ -214,6 +219,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
     len -= txn.payload_part_len;
 
     sha256_add(txn.payload, txn.payload_part_len);
+    sha256_add_payload(txn.payload, txn.payload_part_len);
   }
 
 
@@ -252,6 +258,7 @@ static bool parse_payload_part(unsigned char *ptr, unsigned int len){
   }
 
   sha256_add(txn.payload, txn.payload_part_len);
+  sha256_add_payload(txn.payload, txn.payload_part_len);
 
   ptr += txn.payload_part_len;
   len -= txn.payload_part_len;
@@ -345,7 +352,6 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   txn_is_complete = true;
 
   /* calculate the transaction hash */
-  memset(txn_hash, 0, sizeof txn_hash);
   cx_hash(&hash.header, CX_LAST, NULL, 0, txn_hash, sizeof txn_hash);
 
   return true;
@@ -643,6 +649,45 @@ static void display_txn_part() {
 
 }
 
+static void display_payload_hash() {
+  unsigned int i;
+
+  /* calculate the payload hash */
+  cx_hash(&hash2.header, CX_LAST, NULL, 0, payload_hash, sizeof payload_hash);
+
+  clear_screens();
+
+  add_screens("Payload Hash", (char*)payload_hash +  0, 6, true);
+  add_screens("Payload Hash", (char*)payload_hash +  6, 6, true);
+  add_screens("Payload Hash", (char*)payload_hash + 12, 6, true);
+  add_screens("Payload Hash", (char*)payload_hash + 18, 6, true);
+  add_screens("Payload Hash", (char*)payload_hash + 24, 6, true);
+  add_screens("Payload Hash", (char*)payload_hash + 30, 2, true);
+
+  /* display the payload hash in hex format */
+  for (i=0; i<num_screens; i++) {
+    screens[i].in_hex = true;
+  }
+
+  display_screen(0);
+
+}
+
+static bool on_next_screen() {
+
+  if (uiState == UI_FIRST) {
+    if (txn_type == TXN_DEPLOY || txn_type == TXN_REDEPLOY) {
+      if (!is_skipping_payload && !txn_is_complete) {
+        is_skipping_payload = true;
+        request_next_part();
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){
   bool is_payload_part = has_partial_payload;
 
@@ -665,8 +710,16 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
   if (is_first) {
     display_transaction();
-  } else if (is_payload_part) {
+  } else if (is_payload_part && !is_skipping_payload) {
     display_txn_part();
+  }
+
+  if (is_skipping_payload) {
+    if (is_last) {
+      display_payload_hash();
+    } else {
+      request_next_part();
+    }
   }
 
 }

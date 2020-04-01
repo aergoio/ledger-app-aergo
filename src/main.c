@@ -45,9 +45,13 @@ static unsigned int  current_text_pos;  // current position in the text to displ
 
 bool txn_is_complete;
 bool has_partial_payload;
+bool is_skipping_payload;
 
 static cx_sha256_t hash;
 unsigned char txn_hash[32];
+
+static cx_sha256_t hash2;
+unsigned char payload_hash[32];
 
 // UI currently displayed
 enum UI_STATE { UI_IDLE, UI_FIRST, UI_TEXT, UI_SIGN, UI_REJECT };
@@ -74,6 +78,7 @@ static void ui_reject(void);
 
 static void next_screen();
 static void previous_screen();
+static bool on_next_screen();
 
 static void request_next_part();
 static void on_new_transaction_part(unsigned char *text, unsigned int len, bool is_first, bool is_last);
@@ -685,6 +690,9 @@ static void next_screen() {
     switch (uiState) {
 
     case UI_FIRST:
+      if (on_next_screen() == true) {
+        break;
+      }
     case UI_TEXT:
       if (current_screen == num_screens - 1) {
         ui_sign();
@@ -969,7 +977,7 @@ static bool derive_keys(unsigned char *bip32Path, unsigned char bip32PathLength)
     /* convert the public key to compact format (33 bytes) */
     publicKey.W[0] = ((publicKey.W[64] & 1) ? 0x03 : 0x02);
 
-    memset(privateKeyData, 0, sizeof privateKeyData);
+    explicit_bzero(privateKeyData, sizeof privateKeyData);
     account_selected = true;
     return true;
 }
