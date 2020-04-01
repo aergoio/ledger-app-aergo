@@ -12,9 +12,8 @@ This Ledger application can be used to sign Aergo transactions, like:
 * Stake & Unstake
 * Votes (BP and DAO)
 * Name System (create and update)
+* Smart Contract deploy and redeploy
 * Smart Contract function call
-
-Support for Smart Contract deploy will come later.
 
 ## Requirements
 
