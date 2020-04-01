@@ -760,7 +760,7 @@ static bool display_text_part() {
 
     is_first_display = (line2_size == 0);
 
-    if (text_part_completely_displayed() && txn_is_complete) {
+    if (text_part_completely_displayed()) {
       return false;
     }
 
@@ -840,7 +840,7 @@ static bool update_display_buffer() {
         }
     }
 
-    if (zIn == zEnd && has_partial_payload) {
+    if (zIn == zEnd && !txn_is_complete) {
       return false;
     }
     return true;
@@ -856,7 +856,6 @@ static void display_updated_buffer() {
     display_text_part();
 
     UX_REDISPLAY();
-    UX_CALLBACK_SET_INTERVAL(200);
 
 }
 
