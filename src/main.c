@@ -599,6 +599,9 @@ static void sample_main(void) {
                     break;
                 }
             }
+            CATCH(EXCEPTION_IO_RESET) {
+                THROW(EXCEPTION_IO_RESET);
+            }
             CATCH_OTHER(e) {
                 switch (e & 0xF000) {
                 case 0x6000:
@@ -929,8 +932,13 @@ unsigned char io_event(unsigned char channel) {
         });
         break;
 
-    // unknown events are acknowledged
+    case SEPROXYHAL_TAG_STATUS_EVENT:
+        if (G_io_apdu_media == IO_APDU_MEDIA_USB_HID && !(U4BE(G_io_seproxyhal_spi_buffer, 3) & SEPROXYHAL_TAG_STATUS_EVENT_FLAG_USB_POWERED)) {
+            THROW(EXCEPTION_IO_RESET);
+        }
+        // no break is intentional
     default:
+        // unknown events are acknowledged
         UX_DEFAULT_EVENT();
         break;
     }
@@ -984,39 +992,48 @@ __attribute__((section(".boot"))) int main(void) {
     // exit critical section
     __asm volatile("cpsie i");
 
-    account_selected = false;
-    current_text_pos = 0;
-    line2_size = 0;
-    uiState = UI_IDLE;
-
     // ensure exception will work as planned
     os_boot();
 
-    UX_INIT();
+    while (1) {
 
-    BEGIN_TRY {
-        TRY {
-            io_seproxyhal_init();
+        account_selected = false;
+        current_text_pos = 0;
+        line2_size = 0;
+        uiState = UI_IDLE;
+
+        UX_INIT();
+
+        BEGIN_TRY {
+            TRY {
+                io_seproxyhal_init();
 
 #ifdef LISTEN_BLE
-            if (os_seph_features() & SEPROXYHAL_TAG_SESSION_START_EVENT_FEATURE_BLE) {
-                BLE_power(0, NULL);
-                // restart IOs
-                BLE_power(1, NULL);
-            }
+                if (os_seph_features() & SEPROXYHAL_TAG_SESSION_START_EVENT_FEATURE_BLE) {
+                    BLE_power(0, NULL);
+                    // restart IOs
+                    BLE_power(1, NULL);
+                }
 #endif
 
-            USB_power(0);
-            USB_power(1);
+                USB_power(0);
+                USB_power(1);
 
-            ui_idle();
+                ui_idle();
 
-            sample_main();
+                sample_main();
+            }
+            CATCH(EXCEPTION_IO_RESET) {
+                // reset IO and UX before continuing
+                continue;
+            }
+            CATCH_OTHER(e) {
+            }
+            FINALLY {
+            }
         }
-        CATCH_OTHER(e) {
-        }
-        FINALLY {
-        }
+        END_TRY;
+
     }
-    END_TRY;
+
 }
