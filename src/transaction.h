@@ -41,6 +41,10 @@ char amount_str[48];
 
 unsigned char txn_type;
 
+char last_part[128];
+int last_part_len;
+int last_part_pos;
+
 static unsigned int decode_varint(unsigned char *buf, unsigned int max_len, uint64_t *dest){
   unsigned char byte;
   uint_fast8_t bitpos = 0;
@@ -93,6 +97,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
   txn_is_complete = false;
   has_partial_payload = false;
   is_skipping_payload = false;
+  last_part_pos = 0;
 
   // initialize hash
   memset(txn_hash, 0, sizeof txn_hash);
@@ -243,8 +248,6 @@ loc_invalid:
 
 static bool parse_payload_part(unsigned char *ptr, unsigned int len){
 
-//  if (len < 1) goto loc_incomplete;
-
   txn.payload = (char*) ptr;
 
   txn.payload_part_offset += txn.payload_part_len;
@@ -276,6 +279,17 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   uint64_t str_len, val64;
   unsigned int pos;
 
+  if (last_part_pos == 0) {
+    last_part_pos = 6;
+  } else {
+    memcpy(last_part+last_part_len, ptr, len);
+    ptr = last_part;
+    len += last_part_len;
+  }
+
+  switch (last_part_pos) {
+
+  case 6:
   pos = 6;
 
   // gasLimit
@@ -292,6 +306,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
 
   sha256_add(&txn.gasLimit, 8);
 
+  case 7:
   pos = 7;
 
   // gasPrice
@@ -313,6 +328,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
 
   sha256_add(txn.gasPrice, str_len);
 
+  case 8:
   pos = 8;
 
   // type
@@ -331,6 +347,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
 
   sha256_add(&txn.type, 4);
 
+  case 9:
   pos = 9;
 
   // chain_id
@@ -348,6 +365,8 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
 
   sha256_add(txn.chainId, 32);
 
+  }
+
 
   txn_is_complete = true;
 
@@ -361,6 +380,9 @@ loc_incomplete2:
   len++;
 loc_incomplete:
   /* incomplete transaction */
+  memcpy(last_part, ptr, len);
+  last_part_len = len;
+  last_part_pos = pos;
   return false;
 
 loc_invalid:
