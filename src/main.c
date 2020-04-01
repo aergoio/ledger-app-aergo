@@ -896,7 +896,7 @@ unsigned char io_event(unsigned char channel) {
         break;
 
     case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
-        if (UX_DISPLAYED()) {
+        UX_DISPLAYED_EVENT({
             // perform action after screen elements have been displayed
             if (uiState == UI_FIRST || uiState == UI_TEXT) {
               if (is_first_display) {
@@ -907,9 +907,7 @@ unsigned char io_event(unsigned char channel) {
                 UX_CALLBACK_SET_INTERVAL(200);
               }
             }
-        } else {
-            UX_DISPLAYED_EVENT();
-        }
+        });
         break;
 
     case SEPROXYHAL_TAG_TICKER_EVENT:
