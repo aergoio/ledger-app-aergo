@@ -998,6 +998,7 @@ __attribute__((section(".boot"))) int main(void) {
     while (1) {
 
         account_selected = false;
+        txn_is_complete = true;
         current_text_pos = 0;
         line2_size = 0;
         uiState = UI_IDLE;

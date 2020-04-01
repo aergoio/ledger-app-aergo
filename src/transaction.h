@@ -696,6 +696,10 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     THROW(0x6700);  // wrong length
   }
 
+  if (!is_first && txn_is_complete) {
+    THROW(0x6985);  // invalid state
+  }
+
   if (is_first) {
     parse_first_part(buf, len);
   } else if (has_partial_payload) {
