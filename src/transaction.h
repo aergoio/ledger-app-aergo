@@ -187,7 +187,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
     if (size == 0 || len - size < str_len) goto loc_incomplete2;
     ptr += size;
     len -= size;
-    if (str_len > 40) goto loc_invalid;
+    if (str_len > 15) goto loc_invalid;
     txn.amount = ptr;
     ptr += str_len;
     len -= str_len;
