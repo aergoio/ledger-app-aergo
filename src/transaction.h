@@ -83,6 +83,7 @@ static char * stripstr(char *mainstr, char *separator) {
 
 #define sha256_add(ptr,len) cx_hash(&hash.header,0,(unsigned char*)ptr,len,NULL,0)
 #define sha256_add_payload(ptr,len) cx_hash(&hash2.header,0,(unsigned char*)ptr,len,NULL,0)
+#define sha256_add_message(ptr,len) cx_hash(&hash3.header,0,(unsigned char*)ptr,len,NULL,0)
 
 static bool parse_payload_part(unsigned char *ptr, unsigned int len);
 static bool parse_last_part(unsigned char *ptr, unsigned int len);
@@ -747,5 +748,19 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
       request_next_part();
     }
   }
+
+}
+
+static void on_new_message(unsigned char *text, unsigned int len, bool as_hex){
+
+  /* calculate the message hash */
+  cx_sha256_init(&hash3);
+  sha256_add_message(text, len);
+  cx_hash(&hash3.header, CX_LAST, NULL, 0, txn_hash, sizeof txn_hash);
+
+  /* display the message */
+  clear_screens();
+  add_screens("Message", text, len, true);
+  screens[num_screens-1].in_hex = as_hex;
 
 }

@@ -13,8 +13,10 @@
 #define INS_GET_APP_VERSION 0x01
 #define INS_GET_PUBLIC_KEY  0x02
 #define INS_SIGN_TXN        0x04
+#define INS_SIGN_MSG        0x08
 #define P1_FIRST 0x01
 #define P1_LAST  0x02
+#define P1_HEX   0x08
 
 #define MAX_CHARS_PER_LINE 13  // some strings do not appear entirely on the screen if bigger than this
 
@@ -48,9 +50,9 @@ bool has_partial_payload;
 bool is_skipping_payload;
 
 static cx_sha256_t hash;
-unsigned char txn_hash[32];
-
 static cx_sha256_t hash2;
+static cx_sha256_t hash3;
+unsigned char txn_hash[32];
 unsigned char payload_hash[32];
 
 // UI currently displayed
@@ -84,6 +86,8 @@ static void request_next_part();
 static void on_new_transaction_part(unsigned char *text, unsigned int len, bool is_first, bool is_last);
 static bool display_text_part(void);
 static bool update_display_buffer();
+
+static void on_new_message(unsigned char *text, unsigned int len, bool as_hex);
 
 static bool derive_keys(unsigned char *bip32Path, unsigned char bip32PathLength);
 
@@ -588,6 +592,29 @@ static void sample_main(void) {
                     //
                     text = G_io_apdu_buffer + 5;
                     on_new_transaction_part(text, len, is_first, is_last);
+                    flags |= IO_ASYNCH_REPLY;
+                } break;
+
+                case INS_SIGN_MSG: {
+                    unsigned char *text;
+                    unsigned int len;
+                    bool as_hex = false;
+
+                    if (!account_selected) {
+                        THROW(0x6985);  // invalid state
+                    }
+
+                    if (G_io_apdu_buffer[2] & P1_HEX) {
+                        as_hex = true;
+                    }
+                    // check the message length
+                    len = G_io_apdu_buffer[4];
+                    if (len > 250) {
+                        THROW(0x6700);  // wrong length
+                    }
+                    //
+                    text = G_io_apdu_buffer + 5;
+                    on_new_message(text, len, as_hex);
                     flags |= IO_ASYNCH_REPLY;
                 } break;
 
