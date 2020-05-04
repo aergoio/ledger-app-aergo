@@ -284,7 +284,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
     last_part_pos = 6;
   } else {
     memcpy(last_part+last_part_len, ptr, len);
-    ptr = last_part;
+    ptr = (unsigned char*) last_part;
     len += last_part_len;
   }
 
@@ -760,7 +760,7 @@ static void on_new_message(unsigned char *text, unsigned int len, bool as_hex){
 
   /* display the message */
   clear_screens();
-  add_screens("Message", text, len, true);
+  add_screens("Message", (char*)text, len, true);
   screens[num_screens-1].in_hex = as_hex;
 
 }
