@@ -762,5 +762,6 @@ static void on_new_message(unsigned char *text, unsigned int len, bool as_hex){
   clear_screens();
   add_screens("Message", (char*)text, len, true);
   screens[num_screens-1].in_hex = as_hex;
+  display_screen(0);
 
 }
