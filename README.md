@@ -1,6 +1,6 @@
 # ledger-app-aergo
 
-Aergo application for Ledger Nano S
+Aergo application for Ledger Nano S (beta version)
 
 ![ledger-app-aergo](https://user-images.githubusercontent.com/7624275/75844801-f048fb80-5db5-11ea-9957-3016f3970ccc.jpg)
 
