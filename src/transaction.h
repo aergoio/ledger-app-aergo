@@ -735,6 +735,8 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     THROW(0x6740);  // invalid data
   }
 
+  is_signing = true;
+
   if (is_first) {
     display_transaction();
   } else if (is_payload_part && !is_skipping_payload) {
@@ -762,6 +764,20 @@ static void on_new_message(unsigned char *text, unsigned int len, bool as_hex){
   clear_screens();
   add_screens("Message", (char*)text, len, true);
   screens[num_screens-1].in_hex = as_hex;
+  is_signing = true;
+  display_screen(0);
+
+}
+
+static void on_display_account(unsigned char *pubkey, int pklen){
+
+  /* encode the public key into the account address */
+  encode_account(pubkey, pklen, recipient_address, sizeof recipient_address);
+
+  /* display the account address */
+  clear_screens();
+  add_screens("Account", recipient_address, strlen(recipient_address), true);
+  is_signing = false;
   display_screen(0);
 
 }

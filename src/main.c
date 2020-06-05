@@ -12,6 +12,7 @@
 #define CLA      0xAE
 #define INS_GET_APP_VERSION 0x01
 #define INS_GET_PUBLIC_KEY  0x02
+#define INS_DISPLAY_ACCOUNT 0x03
 #define INS_SIGN_TXN        0x04
 #define INS_SIGN_MSG        0x08
 #define P1_FIRST 0x01
@@ -45,6 +46,7 @@ static unsigned char*text_to_display;
 static unsigned int  len_to_display;
 static unsigned int  current_text_pos;  // current position in the text to display
 
+bool is_signing;
 bool txn_is_complete;
 bool has_partial_payload;
 bool is_skipping_payload;
@@ -88,6 +90,8 @@ static bool display_text_part(void);
 static bool update_display_buffer();
 
 static void on_new_message(unsigned char *text, unsigned int len, bool as_hex);
+
+static void on_display_account(unsigned char *pubkey, int pklen);
 
 static bool derive_keys(unsigned char *bip32Path, unsigned char bip32PathLength);
 
@@ -565,6 +569,18 @@ static void sample_main(void) {
                     THROW(0x9000);
                 } break;
 
+                case INS_DISPLAY_ACCOUNT: {
+
+                    if (!account_selected) {
+                        THROW(0x6985);  // invalid state
+                    }
+
+                    on_display_account(publicKey.W, 33);
+
+                    tx = 0;
+                    THROW(0x9000);
+                } break;
+
                 case INS_SIGN_TXN: {
                     unsigned char *text;
                     unsigned int len;
@@ -725,7 +741,11 @@ static void next_screen() {
       }
     case UI_TEXT:
       if (current_screen == num_screens - 1) {
-        ui_sign();
+        if (is_signing) {
+          ui_sign();
+        } else {
+          ui_idle();
+        }
       } else {
         display_screen(current_screen + 1);
       }
