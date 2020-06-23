@@ -459,6 +459,7 @@ static void display_transaction() {
     break;
 
   case TXN_CALL:
+  case TXN_FEEDELEGATION:
 
     pos = 3;
 
@@ -644,7 +645,6 @@ static void display_transaction() {
 
     break;
 
-  //case TXN_FEEDELEGATION:
   default:
     pos = 21;
     goto loc_invalid;
