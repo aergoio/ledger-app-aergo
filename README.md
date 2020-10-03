@@ -15,6 +15,7 @@ This Ledger application can be used to sign Aergo transactions, like:
 * Smart Contract deploy and redeploy
 * Smart Contract function call
 
+
 ## Requirements
 
 To build and install the app on your Ledger Nano S you must set up the Ledger Nano S build environments.
@@ -23,16 +24,23 @@ Only Linux is supported to build the Ledger app so if you do not have one you ca
 
 Open a terminal on Linux and execute the following commands.
 
-First set up the udev rules for the Ledger devices by executing this line (copy and paste):
+First install the required tools by executing this line (copy and paste):
+
+```
+sudo apt-get install git gcc-multilib g++-multilib python3-venv python3-dev libudev-dev libusb-1.0-0-dev
+```
+
+It will ask for your password on Linux.
+
+Set up the udev rules for the Ledger devices by executing this line:
 
 ```
 wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_udev_rules.sh | sudo bash
 ```
 
-Then install the requirements in a virtual environnment by sourcing `prepare-devenv.sh`:
+Then clone this repository and install the requirements in a virtual environnment:
 
 ```
-sudo apt-get install git gcc-multilib g++-multilib python3-venv python3-dev libudev-dev libusb-1.0-0-dev
 git clone https://github.com/aergoio/ledger-app-aergo
 cd ledger-app-aergo
 source prepare-devenv.sh
@@ -43,7 +51,7 @@ You can optionally follow the [Getting Started](https://ledger.readthedocs.io/en
 
 ## Installation
 
-Connect the device to your computer and type:
+Connect the device to your computer and type this command on the same terminal open before:
 
 ```
 make load
@@ -52,7 +60,7 @@ make load
 
 ## Uninstall
 
-Connect the device to your computer and type:
+Connect the device to your computer and type this command on the same terminal open before:
 
 ```
 make delete
