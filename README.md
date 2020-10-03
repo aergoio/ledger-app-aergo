@@ -31,6 +31,7 @@ Then install the requirements in a virtual environnment by sourcing `prepare-dev
 
 ```
 sudo apt install gcc-multilib g++-multilib python3-venv python3-dev libudev-dev libusb-1.0-0-dev
+cd ledger-app-aergo
 source prepare-devenv.sh
 ```
 
