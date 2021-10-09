@@ -1,10 +1,12 @@
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
+
 #include "os.h"
 #include "cx.h"
 #include "ux.h"
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
+#include "os_io_seproxyhal.h"
 
 #define APP_VERSION_MAJOR   1
 #define APP_VERSION_MINOR   0
@@ -190,6 +192,7 @@ bagl_ui_idle_nanos_button(unsigned int button_mask,
         break;
     }
 
+    UNUSED(button_mask_counter);
     return 0;
 }
 
@@ -240,6 +243,7 @@ bagl_ui_first_nanos_button(unsigned int button_mask,
         next_screen();
         break;
     }
+    UNUSED(button_mask_counter);
     return 0;
 }
 
@@ -298,6 +302,7 @@ bagl_ui_text_nanos_button(unsigned int button_mask,
         next_screen();
         break;
     }
+    UNUSED(button_mask_counter);
     return 0;
 }
 
@@ -364,6 +369,7 @@ bagl_ui_sign_nanos_button(unsigned int button_mask,
         io_seproxyhal_touch_approve(NULL);
         break;
     }
+    UNUSED(button_mask_counter);
     return 0;
 }
 
@@ -425,6 +431,7 @@ bagl_ui_reject_nanos_button(unsigned int button_mask,
         io_seproxyhal_touch_deny(NULL);
         break;
     }
+    UNUSED(button_mask_counter);
     return 0;
 }
 
@@ -433,6 +440,7 @@ bagl_ui_reject_nanos_button(unsigned int button_mask,
 
 
 static const bagl_element_t *io_seproxyhal_touch_exit(const bagl_element_t *e) {
+    UNUSED(e);
     // Go back to the dashboard
     os_sched_exit(0);
     return NULL; // do not redraw the widget
@@ -470,9 +478,11 @@ static const bagl_element_t *io_seproxyhal_touch_approve(const bagl_element_t *e
     // Display back the original UX
     ui_idle();
     return 0; // do not redraw the widget
+    UNUSED(e);
 }
 
 static const bagl_element_t *io_seproxyhal_touch_deny(const bagl_element_t *e) {
+    UNUSED(e);
     G_io_apdu_buffer[0] = 0x69;
     G_io_apdu_buffer[1] = 0x82;
     // Send back the response and return without waiting for new APDU
@@ -933,6 +943,7 @@ static void ui_reject(void) {
 
 unsigned char io_event(unsigned char channel) {
     // nothing done with the event, throw an error on the transport layer if needed
+    UNUSED(channel);
 
     // can't have more than one tag in the reply, not supported yet.
     switch (G_io_seproxyhal_spi_buffer[0]) {

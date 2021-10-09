@@ -16,7 +16,7 @@
 #*******************************************************************************
 
 ifeq ($(BOLOS_SDK),)
-$(error BOLOS_SDK is not set)
+$(error Environment variable BOLOS_SDK is not set)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
@@ -46,6 +46,7 @@ DEFINES += PRINTF\(...\)=
 DEFINES += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=7 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 
 DEFINES += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
+DEFINES += UNUSED\(x\)=\(void\)x
 
 #DEFINES += CX_COMPLIANCE_141
 
@@ -54,39 +55,40 @@ DEFINES += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
 ifneq ($(BOLOS_ENV),)
 $(info BOLOS_ENV=$(BOLOS_ENV))
 CLANGPATH := $(BOLOS_ENV)/clang-arm-fropi/bin/
-GCCPATH := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
+GCCPATH   := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
 else
 $(info BOLOS_ENV is not set: falling back to CLANGPATH and GCCPATH)
 endif
-
 ifeq ($(CLANGPATH),)
 $(info CLANGPATH is not set: clang will be used from PATH)
 endif
-
 ifeq ($(GCCPATH),)
 $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
 endif
 
-CC := $(CLANGPATH)clang
-CFLAGS += -O3 -Os
-
-AS := $(GCCPATH)arm-none-eabi-gcc
-AFLAGS +=
-
-LD := $(GCCPATH)arm-none-eabi-gcc
+CC      := $(CLANGPATH)clang
+CFLAGS  += -O3 -Os
+AS      := $(GCCPATH)arm-none-eabi-gcc
+LD      := $(GCCPATH)arm-none-eabi-gcc
 LDFLAGS += -O3 -Os
-LDLIBS += -lm -lgcc -lc
+LDLIBS  += -lm -lgcc -lc
 
 # Main rules
 
 all: default
 
 load: all
-	python -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
+	python3 -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
+
+load-offline: all
+	python3 -m ledgerblue.loadApp $(APP_LOAD_PARAMS) --offline
 
 delete:
-	python -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
-
-# Import generic rules from the SDK
+	python3 -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
 
 include $(BOLOS_SDK)/Makefile.rules
+
+dep/%.d: %.c Makefile
+
+listvariants:
+	@echo VARIANTS COIN BOL
