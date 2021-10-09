@@ -60,7 +60,7 @@ unsigned char txn_hash[32];
 unsigned char payload_hash[32];
 
 // UI currently displayed
-enum UI_STATE { UI_IDLE, UI_FIRST, UI_TEXT, UI_SIGN, UI_REJECT };
+enum UI_STATE { UI_IDLE, UI_FIRST, UI_TEXT, UI_APPROVE, UI_REJECT };
 enum UI_STATE uiState;
 
 ux_state_t ux;
@@ -79,7 +79,7 @@ static const bagl_element_t *io_seproxyhal_touch_deny(const bagl_element_t *e);
 static void ui_idle(void);
 static void ui_first(void);
 static void ui_text(void);
-static void ui_sign(void);
+static void ui_approve(void);
 static void ui_reject(void);
 
 static void next_screen();
@@ -308,10 +308,10 @@ bagl_ui_text_nanos_button(unsigned int button_mask,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// SIGN SCREEN
+// APPROVE SCREEN
 ////////////////////////////////////////////////////////////////////////////////
 
-static const bagl_element_t bagl_ui_sign_nanos[] = {
+static const bagl_element_t bagl_ui_approve_nanos[] = {
     // {
     //     {type, userid, x, y, width, height, stroke, radius, fill, fgcolor,
     //      bgcolor, font_id, icon_id},
@@ -336,7 +336,7 @@ static const bagl_element_t bagl_ui_sign_nanos[] = {
     {
         {BAGL_LABELINE, 0x02, 45, 12, 128, 11, 0, 0, 0, 0xFFFFFF, 0x000000,
          BAGL_FONT_OPEN_SANS_REGULAR_11px, 0},
-        "Sign",
+        "Approve",
     },
     {
         {BAGL_LABELINE, 0x02, 45, 26, 128, 11, 0, 0, 0, 0xFFFFFF, 0x000000,
@@ -356,7 +356,7 @@ static const bagl_element_t bagl_ui_sign_nanos[] = {
 };
 
 static unsigned int
-bagl_ui_sign_nanos_button(unsigned int button_mask,
+bagl_ui_approve_nanos_button(unsigned int button_mask,
                               unsigned int button_mask_counter) {
     switch (button_mask) {
     case BUTTON_EVT_RELEASED | BUTTON_LEFT:
@@ -752,7 +752,7 @@ static void next_screen() {
     case UI_TEXT:
       if (current_screen == num_screens - 1) {
         if (is_signing) {
-          ui_sign();
+          ui_approve();
         } else {
           ui_idle();
         }
@@ -761,7 +761,7 @@ static void next_screen() {
       }
       break;
 
-    case UI_SIGN:
+    case UI_APPROVE:
       ui_reject();
       break;
 
@@ -785,12 +785,12 @@ static void previous_screen() {
       }
       break;
 
-    case UI_SIGN:
+    case UI_APPROVE:
       display_screen(num_screens - 1);
       break;
 
     case UI_REJECT:
-      ui_sign();
+      ui_approve();
       break;
 
     case UI_IDLE:
@@ -931,9 +931,9 @@ static void ui_text(void) {
     UX_DISPLAY(bagl_ui_text_nanos, NULL);
 }
 
-static void ui_sign(void) {
-    uiState = UI_SIGN;
-    UX_DISPLAY(bagl_ui_sign_nanos, NULL);
+static void ui_approve(void) {
+    uiState = UI_APPROVE;
+    UX_DISPLAY(bagl_ui_approve_nanos, NULL);
 }
 
 static void ui_reject(void) {
