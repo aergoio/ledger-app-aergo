@@ -607,6 +607,7 @@ static void display_transaction() {
 
     clear_screens();
     add_screens("New Contract", txn.payload, txn.payload_part_len, true);
+    screens[num_screens-1].in_hex = true;
 
     break;
 
@@ -619,6 +620,7 @@ static void display_transaction() {
     clear_screens();
     add_screens("Recipient", recipient_address, strlen(recipient_address), false);
     add_screens("New Contract", txn.payload, txn.payload_part_len, true);
+    screens[num_screens-1].in_hex = true;
 
     break;
 
