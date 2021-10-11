@@ -16,7 +16,18 @@ This Ledger application can be used to sign Aergo transactions, like:
 * Smart Contract function call
 
 
-## Requirements
+## Manual Installation
+
+### 1. Build the application
+
+https://developers.ledger.com/docs/nano-app/build/
+
+### 2. Load the app to a Nano S
+
+https://developers.ledger.com/docs/nano-app/load/
+
+
+## Old Instructions (firmware 1.6)
 
 To build and install the app on your Ledger Nano S you must set up the Ledger Nano S build environments.
 
