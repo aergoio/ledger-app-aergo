@@ -570,8 +570,12 @@ static void sample_main(void) {
                     len = G_io_apdu_buffer[4];
                     path = G_io_apdu_buffer + 5;
 
-                    if (derive_keys(path,len) == false) {
-                        THROW(0x6700);  // wrong length
+                    if (len > 0) {
+                        if (derive_keys(path,len) == false) {
+                            THROW(0x6700);  // wrong length
+                        }
+                    } else if (!account_selected) {
+                        THROW(0x6985);  // invalid state
                     }
 
                     os_memmove(G_io_apdu_buffer, publicKey.W, 33);
