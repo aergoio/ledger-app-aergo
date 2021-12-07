@@ -51,7 +51,6 @@ static unsigned int  current_text_pos;  // current position in the text to displ
 bool is_signing;
 bool txn_is_complete;
 bool has_partial_payload;
-bool is_skipping_payload;
 
 static cx_sha256_t hash;
 static cx_sha256_t hash2;

@@ -97,7 +97,6 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
 
   txn_is_complete = false;
   has_partial_payload = false;
-  is_skipping_payload = false;
   last_part_pos = 0;
 
   // initialize hash
@@ -443,6 +442,26 @@ loc_invalid:
   return false;
 }
 
+static void display_payload_hash() {
+  unsigned int i;
+
+  /* calculate the payload hash */
+  cx_hash(&hash2.header, CX_LAST, NULL, 0, payload_hash, sizeof payload_hash);
+
+  add_screens("New Contract 1/6", (char*)payload_hash +  0, 6, true);
+  add_screens("New Contract 2/6", (char*)payload_hash +  6, 6, true);
+  add_screens("New Contract 3/6", (char*)payload_hash + 12, 6, true);
+  add_screens("New Contract 4/6", (char*)payload_hash + 18, 6, true);
+  add_screens("New Contract 5/6", (char*)payload_hash + 24, 6, true);
+  add_screens("New Contract 6/6", (char*)payload_hash + 30, 2, true);
+
+  /* display the payload hash in hex format */
+  for (i=0; i<num_screens; i++) {
+    screens[i].in_hex = true;
+  }
+
+}
+
 static void display_transaction() {
   unsigned int pos = 1;
   char *function_name, *args;
@@ -603,11 +622,8 @@ static void display_transaction() {
 
     pos = 12;
 
-    if (!txn.payload || txn.payload_len==0) goto loc_invalid;
-
     clear_screens();
-    add_screens("New Contract", txn.payload, txn.payload_part_len, true);
-    screens[num_screens-1].in_hex = true;
+    display_payload_hash();
 
     break;
 
@@ -615,12 +631,9 @@ static void display_transaction() {
 
     pos = 13;
 
-    if (!txn.payload || txn.payload_len==0) goto loc_invalid;
-
     clear_screens();
     add_screens("Recipient", recipient_address, strlen(recipient_address), false);
-    add_screens("New Contract", txn.payload, txn.payload_part_len, true);
-    screens[num_screens-1].in_hex = true;
+    display_payload_hash();
 
     break;
 
@@ -674,42 +687,7 @@ static void display_txn_part() {
 
 }
 
-static void display_payload_hash() {
-  unsigned int i;
-
-  /* calculate the payload hash */
-  cx_hash(&hash2.header, CX_LAST, NULL, 0, payload_hash, sizeof payload_hash);
-
-  clear_screens();
-
-  add_screens("Payload Hash", (char*)payload_hash +  0, 6, true);
-  add_screens("Payload Hash", (char*)payload_hash +  6, 6, true);
-  add_screens("Payload Hash", (char*)payload_hash + 12, 6, true);
-  add_screens("Payload Hash", (char*)payload_hash + 18, 6, true);
-  add_screens("Payload Hash", (char*)payload_hash + 24, 6, true);
-  add_screens("Payload Hash", (char*)payload_hash + 30, 2, true);
-
-  /* display the payload hash in hex format */
-  for (i=0; i<num_screens; i++) {
-    screens[i].in_hex = true;
-  }
-
-  display_screen(0);
-
-}
-
 static bool on_next_screen() {
-
-  if (uiState == UI_FIRST) {
-    if (txn_type == TXN_DEPLOY || txn_type == TXN_REDEPLOY) {
-      if (!is_skipping_payload && !txn_is_complete) {
-        is_skipping_payload = true;
-        request_next_part();
-        return true;
-      }
-    }
-  }
-
   return false;
 }
 
@@ -739,18 +717,16 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 
   is_signing = true;
 
-  if (is_first) {
-    display_transaction();
-  } else if (is_payload_part && !is_skipping_payload) {
-    display_txn_part();
-  }
-
-  if (is_skipping_payload) {
-    if (is_last) {
-      display_payload_hash();
+  if (txn_type == TXN_DEPLOY || txn_type == TXN_REDEPLOY) {
+    if (txn_is_complete) {
+      display_transaction();
     } else {
       request_next_part();
     }
+  } else if (is_first) {
+    display_transaction();
+  } else if (is_payload_part) {
+    display_txn_part();
   }
 
 }
