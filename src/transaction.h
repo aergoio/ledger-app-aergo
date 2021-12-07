@@ -632,7 +632,7 @@ static void display_transaction() {
     pos = 13;
 
     clear_screens();
-    add_screens("Recipient", recipient_address, strlen(recipient_address), false);
+    add_screens("Redeploy", recipient_address, strlen(recipient_address), false);
     display_payload_hash();
 
     break;
