@@ -28,8 +28,7 @@ Open a terminal and then run these commands, one line at a time:
 sudo docker build -t ledger-app-builder:latest .
 git clone https://github.com/aergoio/ledger-app-aergo
 cd ledger-app-aergo
-sudo docker run --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app"
---privileged ledger-app-builder:latest
+sudo docker run --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app" --privileged ledger-app-builder:latest
 ```
 
 A prompt like this may appear:
@@ -38,7 +37,7 @@ A prompt like this may appear:
 root@656be163fe84:/app#
 ```
 
-Then run this command on this prompt:
+Then run this command on the above prompt:
 
 ```
 make
@@ -103,7 +102,7 @@ source prepare-devenv.sh
 You can optionally follow the [Getting Started](https://ledger.readthedocs.io/en/latest/userspace/getting_started.html) instructions from Ledger.
 
 
-## Installation
+### Installation
 
 Connect the device to your computer and type this command on the same terminal open before:
 
@@ -112,7 +111,7 @@ make load
 ```
 
 
-## Uninstall
+### Uninstall
 
 Connect the device to your computer and type this command on the same terminal open before:
 
