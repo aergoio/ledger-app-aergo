@@ -18,11 +18,54 @@ This Ledger application can be used to sign Aergo transactions, like:
 
 ## Manual Installation
 
-### 1. Build the application
+Follow these instructions to compile and install the Aergo app on your Ledger Nano S, while the app is not available on the Ledger Live
+
+This was only tested on Linux, but it may work on Mac too. You will need docker and git.
+
+Open a terminal and then run these commands, one line at a time:
+
+```
+sudo docker build -t ledger-app-builder:latest .
+git clone https://github.com/aergoio/ledger-app-aergo
+cd ledger-app-aergo
+sudo docker run --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app"
+--privileged ledger-app-builder:latest
+```
+
+A prompt like this may appear:
+
+```
+root@656be163fe84:/app#
+```
+
+Then run this command on this prompt:
+
+```
+make
+```
+
+Now plug the Nano S on the computer and unlock it with your password. Then run:
+
+```
+make load
+```
+
+When done, exit the docker terminal by typing:
+
+```
+exit
+```
+
+
+### Details
+
+More information is available on the Ledger portal:
+
+Building the application:
 
 https://developers.ledger.com/docs/nano-app/build/
 
-### 2. Load the app to a Nano S
+Loading the app to a Nano S:
 
 https://developers.ledger.com/docs/nano-app/load/
 
