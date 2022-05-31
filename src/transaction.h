@@ -14,6 +14,7 @@
 #define TXN_TRANSFER       4
 #define TXN_CALL           5
 #define TXN_DEPLOY         6
+#define TXN_MULTICALL      7
 
 struct txn {
   uint64_t nonce;
@@ -494,6 +495,23 @@ static void display_transaction() {
     add_screens("Contract", recipient_address, strlen(recipient_address), false);
     add_screens("Function", function_name, strlen(function_name), true);
     add_screens("Parameters", args, size, true);
+
+    break;
+
+  case TXN_MULTICALL:
+
+    pos = 15;
+
+    /* display the payload */
+    /* [["call","...","fn","arg"],["assert","..."]] */
+
+    if (!txn.payload) {
+      goto loc_invalid;
+    }
+
+    clear_screens();  // "Composable Tx"
+    add_screens("Multi-Call", txn.payload, txn.payload_part_len, true);
+    screens[num_screens-1].is_multicall = true;
 
     break;
 

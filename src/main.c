@@ -30,6 +30,7 @@ struct items {
   char *value;
   unsigned int vsize;
   bool in_hex;
+  bool is_multicall;
 };
 
 static struct items screens[8];
@@ -895,6 +896,14 @@ static bool update_display_buffer() {
             line2b[line2_size++] = ' ';
         } else if (c == 0x08) { /* backspace should not be hidden */
             line2b[line2_size++] = '?';
+        } else if (screens[current_screen].is_multicall) {
+            if (c == '"') {
+              // do not display
+            } else if (c == ',') {
+              line2b[line2_size++] = ' ';
+            } else {
+              line2b[line2_size++] = c;
+            }
         } else {
             line2b[line2_size++] = c;
         }
