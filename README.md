@@ -118,3 +118,8 @@ Connect the device to your computer and type this command on the same terminal o
 ```
 make delete
 ```
+
+
+## Interfacing with the app
+
+Check the [wiki](https://github.com/aergoio/ledger-app-aergo/wiki/APDU-Requests) for more information
