@@ -32,6 +32,8 @@ static char parsed_text[30];     // remaining part
 
 static unsigned int  parsed_size;
 static unsigned int  last_utf8_char;
+static unsigned int  last_char;
+static bool          is_inside_text;
 
 static unsigned char*input_text;
 static unsigned int  input_size;
@@ -114,6 +116,8 @@ static void clear_screens() {
   input_pos = 0;
   parsed_size = 0;
   last_utf8_char = 0;
+  last_char = 0;
+  is_inside_text = false;
 }
 
 static void add_screens(char *title, char *text, unsigned int len, bool parse_text) {
@@ -437,14 +441,15 @@ static bool update_display_buffer() {  // in_hex and is_multicall as args?
         } else if (c == 0x08) { /* backspace should not be hidden */
             parsed_text[parsed_size++] = '?';
         } else if (screens[current_screen-1].is_multicall) {
-            if (c == '"') {  // && last_c != '\'
+            if (c == '"' && last_char != '\\') {
               // do not display
-              // inside = !inside;
-            } else if (c == ',') {  // && !inside
+              is_inside_text = !is_inside_text;
+            } else if (c == ',' && !is_inside_text) {
               parsed_text[parsed_size++] = ' ';
             } else {
               parsed_text[parsed_size++] = c;
             }
+            last_char = c;
         } else {
             parsed_text[parsed_size++] = c;
         }
