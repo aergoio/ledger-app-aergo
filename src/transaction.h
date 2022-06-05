@@ -526,8 +526,8 @@ static void display_transaction() {
       goto loc_invalid;
     }
 
-    clear_screens();  // "Composable Tx"
-    add_screens("Multi-Call", txn.payload, txn.payload_part_len, true);
+    clear_screens();
+    add_screens("MultiCall", txn.payload, txn.payload_part_len, true);
     screens[num_screens-1].is_multicall = true;
 
     break;

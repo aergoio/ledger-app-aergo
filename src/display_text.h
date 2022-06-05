@@ -163,6 +163,8 @@ static bool prepare_screen(int n) {
 
   // parsed text (output)
   last_utf8_char = 0;
+  last_char = 0;
+  is_inside_text = false;
   parsed_size = 0;
   return parse_next_page();
 
@@ -195,6 +197,8 @@ static void reset_screen() {
   input_pos  = 0;
 
   last_utf8_char = 0;
+  last_char = 0;
+  is_inside_text = false;
   parsed_size = 0;
 
 }
