@@ -98,6 +98,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
 
   txn_is_complete = false;
   has_partial_payload = false;
+  last_part_len = 0;
   last_part_pos = 0;
 
   // initialize hash
@@ -444,27 +445,31 @@ loc_invalid:
 }
 
 static void display_payload_hash() {
-  unsigned int i;
+  int i;
 
   /* calculate the payload hash */
   cx_hash(&hash2.header, CX_LAST, NULL, 0, payload_hash, sizeof payload_hash);
 
-  add_screens("New Contract 1/6", (char*)payload_hash +  0, 6, true);
-  add_screens("New Contract 2/6", (char*)payload_hash +  6, 6, true);
-  add_screens("New Contract 3/6", (char*)payload_hash + 12, 6, true);
-  add_screens("New Contract 4/6", (char*)payload_hash + 18, 6, true);
-  add_screens("New Contract 5/6", (char*)payload_hash + 24, 6, true);
-  add_screens("New Contract 6/6", (char*)payload_hash + 30, 2, true);
+  add_screens("New Contract 1/6", (char*)payload_hash +  0, 6, false);
+  add_screens("New Contract 2/6", (char*)payload_hash +  6, 6, false);
+  add_screens("New Contract 3/6", (char*)payload_hash + 12, 6, false);
+  add_screens("New Contract 4/6", (char*)payload_hash + 18, 6, false);
+  add_screens("New Contract 5/6", (char*)payload_hash + 24, 6, false);
+  add_screens("New Contract 6/6", (char*)payload_hash + 30, 2, false);
 
   /* display the payload hash in hex format */
   for (i=0; i<num_screens; i++) {
     screens[i].in_hex = true;
   }
 
+  /* to avoid asking for txn parts again */
+  is_first_part = true;
+  is_last_part = true;
+
 }
 
 static void display_transaction() {
-  unsigned int pos = 1;
+  unsigned int pos = 0;
   char *function_name, *args;
   unsigned int size;
 
@@ -472,16 +477,22 @@ static void display_transaction() {
   switch (txn_type) {
   case TXN_TRANSFER:
 
+    pos = 1;
+
     clear_screens();
-    add_screens("Amount", amount_str, strlen(amount_str), true);
+    add_screens("Amount", amount_str, strlen(amount_str), false);
     add_screens("Recipient", recipient_address, strlen(recipient_address), false);
+
+// can have payload
 
     break;
 
   case TXN_CALL:
   case TXN_FEEDELEGATION:
 
-    pos = 3;
+    pos = 2;
+
+// without payload -> default fn
 
     /* parse the payload */
     /* {"Name":"some_function","Args":[<parameters>]} */
@@ -500,7 +511,7 @@ static void display_transaction() {
 
   case TXN_MULTICALL:
 
-    pos = 15;
+    pos = 3;
 
     /* display the payload */
     /* [["call","...","fn","arg"],["assert","..."]] */
@@ -661,7 +672,7 @@ static void display_transaction() {
 
     clear_screens();
     if (txn.amount[0] != 0) {
-      add_screens("Amount", amount_str, strlen(amount_str), true);
+      add_screens("Amount", amount_str, strlen(amount_str), false);
     }
     if (recipient_address[0] != 0) {
       add_screens("Recipient", recipient_address, strlen(recipient_address), false);
@@ -684,8 +695,8 @@ static void display_transaction() {
   }
 
 
-  /* display the first screen */
-  display_screen(0);
+  /* display the first or expected page */
+  display_proper_page();
 
   return;
 
@@ -698,19 +709,15 @@ static void display_txn_part() {
 
   //update_screen_content(txn.payload, txn.payload_part_len);
 
-  screens[num_screens-1].value = txn.payload;
-  screens[num_screens-1].vsize = txn.payload_part_len;
+  screens[num_screens-1].text = txn.payload;
+  screens[num_screens-1].size = txn.payload_part_len;
 
-  display_updated_buffer();
+  display_new_input();
 
-}
-
-static bool on_next_screen() {
-  return false;
 }
 
 static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){
-  bool is_payload_part = has_partial_payload;
+  bool is_payload_part = (!is_first && has_partial_payload);
 
   /* check the minimum transaction size */
   if (is_first && len < 60) {
@@ -720,6 +727,9 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
   if (!is_first && txn_is_complete) {
     THROW(0x6985);  // invalid state
   }
+
+  is_first_part = is_first;
+  is_last_part = is_last;
 
   if (is_first) {
     parse_first_part(buf, len);
@@ -745,6 +755,8 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
     display_transaction();
   } else if (is_payload_part) {
     display_txn_part();
+  } else {
+    display_proper_page();
   }
 
 }
@@ -760,8 +772,12 @@ static void on_new_message(unsigned char *text, unsigned int len, bool as_hex){
   clear_screens();
   add_screens("Message", (char*)text, len, true);
   screens[num_screens-1].in_hex = as_hex;
+
   is_signing = true;
-  display_screen(0);
+  is_first_part = true;
+  is_last_part = true;
+  txn_is_complete = true;
+  display_proper_page();
 
 }
 
@@ -772,8 +788,12 @@ static void on_display_account(unsigned char *pubkey, int pklen){
 
   /* display the account address */
   clear_screens();
-  add_screens("Account", recipient_address, strlen(recipient_address), true);
+  add_screens("Account", recipient_address, strlen(recipient_address), false);
+
   is_signing = false;
-  display_screen(0);
+  is_first_part = true;
+  is_last_part = true;
+  txn_is_complete = true;
+  display_proper_page();
 
 }
