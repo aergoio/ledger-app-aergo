@@ -482,8 +482,11 @@ static void display_transaction() {
     clear_screens();
     add_screens("Amount", amount_str, strlen(amount_str), false);
     add_screens("Recipient", recipient_address, strlen(recipient_address), false);
-
-// can have payload
+    if (txn.payload) {
+      add_screens("Payload", txn.payload, txn.payload_part_len, true);
+      /* display the payload in hex format because it can be just binary data */
+      screens[num_screens-1].in_hex = true;
+    }
 
     break;
 
@@ -706,8 +709,6 @@ loc_invalid:
 }
 
 static void display_txn_part() {
-
-  //update_screen_content(txn.payload, txn.payload_part_len);
 
   screens[num_screens-1].text = txn.payload;
   screens[num_screens-1].size = txn.payload_part_len;
