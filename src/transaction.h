@@ -159,7 +159,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
         txn.is_name = true;
       } else if (strncmp((char*)ptr,"aergo.enterprise",16) == 0) {
         txn.is_enterprise = true;
-      } else if (str_len > 12) {  /* name system accounts limited to 12 characters */
+      } else if (str_len > 30) {  /* name system accounts limited to 30 characters */
         goto loc_invalid;
       }
     }
