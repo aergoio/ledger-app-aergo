@@ -495,20 +495,23 @@ static void display_transaction() {
 
     pos = 2;
 
-// without payload -> default fn
-
-    /* parse the payload */
-    /* {"Name":"some_function","Args":[<parameters>]} */
-
-    if (parse_payload(&function_name, &args, &size) == false) goto loc_invalid;
-    if (!args) goto loc_invalid;
-
     /* set the screens to be displayed */
 
     clear_screens();
     add_screens("Contract", recipient_address, strlen(recipient_address), false);
-    add_screens("Function", function_name, strlen(function_name), true);
-    add_screens("Parameters", args, size, true);
+
+    if (txn.payload) {
+      /* parse the payload */
+      /* {"Name":"some_function","Args":[<parameters>]} */
+      if (parse_payload(&function_name, &args, &size) == false) goto loc_invalid;
+      if (!args) goto loc_invalid;
+
+      add_screens("Function", function_name, strlen(function_name), true);
+      add_screens("Parameters", args, size, true);
+    } else {
+      function_name = "default";
+      add_screens("Function", function_name, strlen(function_name), false);
+    }
 
     break;
 
