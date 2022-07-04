@@ -25,9 +25,9 @@ This was only tested on Linux, but it may work on Mac too. You will need docker 
 Open a terminal and then run these commands, one line at a time:
 
 ```
-sudo docker build -t ledger-app-builder:latest .
 git clone https://github.com/aergoio/ledger-app-aergo
 cd ledger-app-aergo
+sudo docker build -t ledger-app-builder:latest .
 sudo docker run --rm -ti -v "/dev/bus/usb:/dev/bus/usb" -v "$(realpath .):/app" --privileged ledger-app-builder:latest
 ```
 
