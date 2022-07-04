@@ -33,6 +33,7 @@ static char parsed_text[30];     // remaining part
 static unsigned int  parsed_size;
 static unsigned int  last_utf8_char;
 static unsigned int  last_char;
+static bool is_in_command;
 static bool is_in_string;
 static bool in_internal_str;
 static bool is_in_object;
@@ -122,6 +123,7 @@ static void clear_screens() {
   parsed_size = 0;
   last_utf8_char = 0;
   last_char = 0;
+  is_in_command = false;
   is_in_string = false;
   in_internal_str = false;
   is_in_object = false;
@@ -173,6 +175,7 @@ static bool prepare_screen(int n) {
   // parsed text (output)
   last_utf8_char = 0;
   last_char = 0;
+  is_in_command = false;
   is_in_string = false;
   in_internal_str = false;
   is_in_object = false;
@@ -211,6 +214,7 @@ static void reset_screen() {
 
   last_utf8_char = 0;
   last_char = 0;
+  is_in_command = false;
   is_in_string = false;
   in_internal_str = false;
   is_in_object = false;
@@ -547,12 +551,21 @@ static bool parse_multicall_page() {
           }
         } else {
           if (c == '[') {
-            // copy to buffer: "-> "
-            parsed_text[parsed_size++] = '-';
-            parsed_text[parsed_size++] = '>';
-            parsed_text[parsed_size++] = ' ';
+            if (!is_in_command) {
+              is_in_command = true;
+              // copy to buffer: "-> "
+              parsed_text[parsed_size++] = '-';
+              parsed_text[parsed_size++] = '>';
+              parsed_text[parsed_size++] = ' ';
+            } else {
+              is_in_array = true;
+            }
+          } else if (c == ']') {
+            is_in_command = false;
           } else if (c == '"') {
             is_in_string = true;
+          } else if (c == '{') {
+            is_in_object = true;
           }
         }
 
