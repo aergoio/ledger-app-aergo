@@ -522,12 +522,12 @@ static void display_transaction() {
     /* display the payload */
     /* [["call","...","fn","arg"],["assert","..."]] */
 
-    if (!txn.payload) {
+    if (!txn.payload || txn.payload_part_len<1 || txn.payload[0]!='[') {
       goto loc_invalid;
     }
 
     clear_screens();
-    add_screens("MultiCall", txn.payload, txn.payload_part_len, true);
+    add_screens("MultiCall", txn.payload+1, txn.payload_part_len-1, true);
     screens[num_screens-1].is_multicall = true;
 
     break;
