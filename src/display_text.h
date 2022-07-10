@@ -491,9 +491,9 @@ static bool parse_multicall_page() {
     zEnd = &input_text[input_size];
 
     while (zIn < zEnd && parsed_size < MAX_CHARS_PER_LINE) {
-        unsigned int c = 0;
-        bool is_utf8 = false;
-        bool copy_it = false;
+        unsigned int c;
+        bool is_utf8;
+        bool copy_it;
 
         if (last_utf8_char != 0) {
           c = last_utf8_char;
@@ -511,10 +511,12 @@ static bool parse_multicall_page() {
           return (parsed_size >= MAX_CHARS_PER_LINE);
         }
 
+        copy_it = false;
+
         if (is_in_string) {
           if (c == '"' && last_char != '\\') {
             is_in_string = false;
-            return true;  //goto loc_display_page;
+            if (parsed_size > 0) return true;  // display the page
           } else {
             copy_it = true;
           }
@@ -529,7 +531,8 @@ static bool parse_multicall_page() {
             obj_level--;
             if (obj_level == 0) {
               is_in_object = false;
-              return true;  //goto loc_display_page;
+              parsed_text[parsed_size++] = c;
+              return true;  // display the page
             }
           } else if (c == '{') {
             obj_level++;
@@ -542,7 +545,8 @@ static bool parse_multicall_page() {
             obj_level--;
             if (obj_level == 0) {
               is_in_array = false;
-              return true;  //goto loc_display_page;
+              parsed_text[parsed_size++] = c;
+              return true;  // display the page
             }
           } else if (c == '[') {
             obj_level++;
@@ -553,12 +557,14 @@ static bool parse_multicall_page() {
           if (c == '[') {
             if (!is_in_command) {
               is_in_command = true;
-              // copy to buffer: "-> "
-              parsed_text[parsed_size++] = '-';
+              // copy to buffer: "=> "
+              parsed_text[parsed_size++] = '=';
               parsed_text[parsed_size++] = '>';
               parsed_text[parsed_size++] = ' ';
             } else {
               is_in_array = true;
+              obj_level = 1;
+              copy_it = true;
             }
           } else if (c == ']') {
             is_in_command = false;
@@ -566,6 +572,8 @@ static bool parse_multicall_page() {
             is_in_string = true;
           } else if (c == '{') {
             is_in_object = true;
+            obj_level = 1;
+            copy_it = true;
           }
         }
 
