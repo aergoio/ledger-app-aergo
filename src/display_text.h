@@ -54,6 +54,8 @@ static void display_page();
 static void reset_display_state();
 static void reset_page();
 
+static void reset_screen();
+
 static bool on_last_screen();
 static bool on_last_page();
 
@@ -113,22 +115,9 @@ static const char hexdigits[] = {
 static void clear_screens() {
   num_screens = 0;
   memset(screens, 0, sizeof(screens));
-  current_screen = 0;
-
+  reset_screen();
   //reset_page();
   current_page = 0;
-
-  input_size = 0;
-  input_pos = 0;
-  parsed_size = 0;
-  last_utf8_char = 0;
-  last_char = 0;
-  is_in_command = false;
-  is_in_string = false;
-  in_internal_str = false;
-  is_in_object = false;
-  is_in_array = false;
-  obj_level = 0;
 }
 
 static void add_screens(char *title, char *text, unsigned int len, bool parse_text) {
@@ -354,6 +343,12 @@ static void get_next_data(int move_to, void(*callback)(bool)) {
     }
   }
 
+  // when restarting from the first page
+  if (move_to == PAGE_FIRST && !is_first_part) {
+    request_first_part();
+    return;
+  }
+
   // page_to_display  should NOT be overwriten on the first txn part!
 
   display_proper_page();
@@ -403,6 +398,10 @@ static bool parse_next_page() {
         return false;
       }
     }
+  }
+
+  if (parsed_size == 0) {
+    return true;
   }
 
   // copy output to the display buffer (limited to MAX_CHARS_PER_LINE)
