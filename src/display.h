@@ -2,6 +2,7 @@
 #pragma GCC diagnostic ignored "-Wformat-invalid-specifier"  // snprintf
 #pragma GCC diagnostic ignored "-Wformat-extra-args"         // snprintf
 
+void reset_current_state();
 void on_anterior_delimiter();
 void on_posterior_delimiter();
 
@@ -127,6 +128,8 @@ void start_display() {
 
   // start the display
   ux_flow_init(0, ux_generic_flow, NULL);
+
+  reset_current_state();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,8 +145,12 @@ enum e_state {
 // An instance of our new enum
 enum e_state current_state;
 
+void reset_current_state() {
+  current_state = STATIC_SCREEN;
+}
+
 // This is a special function for bnnn_paging to work properly in an edgecase
-void bnnn_paging_edgecase() {
+void bnnn_paging_edgecase_prev() {
     G_ux.flow_stack[G_ux.stack_count - 1].prev_index = G_ux.flow_stack[G_ux.stack_count - 1].index - 2;
     G_ux.flow_stack[G_ux.stack_count - 1].index--;
     ux_flow_relayout();
@@ -183,7 +190,7 @@ void on_last_page_cb(bool has_dynamic_data) {
 void on_next_page_cb(bool has_dynamic_data) {
   if (has_dynamic_data) {
     // similar to `ux_flow_prev()` but updates layout to account for `bnnn_paging`'s weird behaviour
-    bnnn_paging_edgecase();  // move from the posterior delimiter to the dynamic screen  <-
+    bnnn_paging_edgecase_prev();  // move from the posterior delimiter to the dynamic screen  <-
   } else {
     current_state = STATIC_SCREEN;
     ux_flow_next();  // move from the posterior delimiter to the static screen  ->
