@@ -359,11 +359,11 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   size = decode_varint(ptr, len, &str_len);
   if (size == 0 || len - size < str_len) goto loc_incomplete2;
   ptr += size;
-  len -= size;
+  //len -= size;
   if (str_len != 32) goto loc_invalid;
   txn.chainId = ptr;
-  ptr += str_len;
-  len -= str_len;
+  //ptr += str_len;
+  //len -= str_len;
 
   sha256_add(txn.chainId, 32);
 
@@ -477,7 +477,7 @@ static void display_transaction() {
   switch (txn_type) {
   case TXN_TRANSFER:
 
-    pos = 1;
+    //pos = 1;
 
     clear_screens();
     add_screens("Amount", amount_str, strlen(amount_str), false);
@@ -655,7 +655,7 @@ static void display_transaction() {
 
   case TXN_DEPLOY:
 
-    pos = 12;
+    //pos = 12;
 
     clear_screens();
     display_payload_hash();
@@ -664,7 +664,7 @@ static void display_transaction() {
 
   case TXN_REDEPLOY:
 
-    pos = 13;
+    //pos = 13;
 
     clear_screens();
     add_screens("Redeploy", recipient_address, strlen(recipient_address), false);
@@ -798,6 +798,7 @@ static void on_display_account(unsigned char *pubkey, int pklen){
   is_first_part = true;
   is_last_part = true;
   txn_is_complete = true;
+  reset_display_state();
   display_proper_page();
 
 }

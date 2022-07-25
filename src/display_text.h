@@ -153,7 +153,7 @@ static bool prepare_screen(int n) {
   current_page = n - 1;  // increased on parse_next_page()
 
   // title
-  strcpy(global_title, screens[current_screen-1].title);
+  strlcpy(global_title, screens[current_screen-1].title, sizeof(global_title));
 
   // raw text (input)
   input_text = (unsigned char*)
@@ -491,7 +491,7 @@ static bool parse_multicall_page() {
 
     while (zIn < zEnd && parsed_size < MAX_CHARS_PER_LINE) {
         unsigned int c;
-        bool is_utf8;
+        bool is_utf8 = false;
         bool copy_it;
 
         if (last_utf8_char != 0) {
