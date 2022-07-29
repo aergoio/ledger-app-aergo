@@ -151,9 +151,9 @@ void reset_current_state() {
 
 // This is a special function for bnnn_paging to work properly in an edgecase
 void bnnn_paging_edgecase_prev() {
-    G_ux.flow_stack[G_ux.stack_count - 1].prev_index = G_ux.flow_stack[G_ux.stack_count - 1].index - 2;
-    G_ux.flow_stack[G_ux.stack_count - 1].index--;
-    ux_flow_relayout();
+  G_ux.flow_stack[G_ux.stack_count - 1].prev_index = G_ux.flow_stack[G_ux.stack_count - 1].index - 2;
+  G_ux.flow_stack[G_ux.stack_count - 1].index--;
+  ux_flow_relayout();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

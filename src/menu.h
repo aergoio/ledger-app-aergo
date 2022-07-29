@@ -33,11 +33,11 @@ UX_FLOW(ux_menu_main_flow,
         FLOW_LOOP);
 
 void ui_menu_main() {
-    if (G_ux.stack_count == 0) {
-        ux_stack_push();
-    }
+  if (G_ux.stack_count == 0) {
+    ux_stack_push();
+  }
 
-    ux_flow_init(0, ux_menu_main_flow, NULL);
+  ux_flow_init(0, ux_menu_main_flow, NULL);
 }
 
 UX_STEP_NOCB(ux_menu_info_step, bn, {"Aergo App", "(c) 2022 Aergo"});
@@ -49,5 +49,5 @@ UX_STEP_CB(ux_menu_back_step, pb, ui_menu_main(), {&C_icon_back, "Back"});
 UX_FLOW(ux_menu_about_flow, &ux_menu_info_step, &ux_menu_back_step, FLOW_LOOP);
 
 void ui_menu_about() {
-    ux_flow_init(0, ux_menu_about_flow, NULL);
+  ux_flow_init(0, ux_menu_about_flow, NULL);
 }

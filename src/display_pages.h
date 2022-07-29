@@ -303,7 +303,7 @@ static void get_next_data(int move_to, void(*callback)(bool)) {
     return;
   }
 
-  // page_to_display  should NOT be overwriten on the first txn part!
+  // page_to_display  should NOT be overwritten on the first txn part!
 
   display_proper_page();
 
