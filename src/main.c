@@ -148,6 +148,8 @@ static void request_next_part() {
 
 #include "menu.h"
 
+#include "display_pages.h"
+
 #include "display_text.h"
 
 #include "display.h"
