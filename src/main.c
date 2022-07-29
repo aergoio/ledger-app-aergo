@@ -142,6 +142,8 @@ static void request_next_part() {
 
 #include "io.h"
 
+#include "sha256.h"
+
 #include "crypto.h"
 
 #include "menu.h"
@@ -151,6 +153,8 @@ static void request_next_part() {
 #include "display.h"
 
 #include "transaction.h"
+
+#include "selection.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // APP MAIN LOOP
