@@ -76,14 +76,15 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
 void encode_amount(unsigned char *buf, unsigned int len, char *out, unsigned int outlen) {
   uint256_t uint256;
   unsigned int i;
+  char temp_buffer[100];
 
   convertUint256BE(buf, len, &uint256);
-  tostring256(&uint256, 10, (char *) G_io_apdu_buffer, 100);
+  tostring256(&uint256, 10, (char *) temp_buffer, sizeof temp_buffer);
   i = 0;
-  while (G_io_apdu_buffer[i]) {
+  while (temp_buffer[i]) {
     i++;
   }
-  adjustDecimals((char*) G_io_apdu_buffer, i, out, outlen, DECIMALS);
+  adjustDecimals((char*) temp_buffer, i, out, outlen, DECIMALS);
 
   i = strlen(out);
   if (i + 7 > outlen) return;
