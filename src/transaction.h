@@ -153,11 +153,11 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
     ptr += size;
     len -= size;
     if (str_len != 33) {
-      if (strncmp((char*)ptr,"aergo.system",12) == 0) {
+      if (str_len==12 && strncmp((char*)ptr,"aergo.system",12) == 0) {
         txn.is_system = true;
-      } else if (strncmp((char*)ptr,"aergo.name",10) == 0) {
+      } else if (str_len==10 && strncmp((char*)ptr,"aergo.name",10) == 0) {
         txn.is_name = true;
-      } else if (strncmp((char*)ptr,"aergo.enterprise",16) == 0) {
+      } else if (str_len==16 && strncmp((char*)ptr,"aergo.enterprise",16) == 0) {
         txn.is_enterprise = true;
       } else if (str_len > 30) {  /* name system accounts limited to 30 characters */
         goto loc_invalid;
@@ -280,6 +280,10 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   unsigned int size;
   uint64_t str_len, val64;
   unsigned int pos;
+
+  if (last_part_len + len > sizeof(last_part)) {
+    THROW(0x6720 + 10);
+  }
 
   if (last_part_pos == 0) {
     last_part_pos = 6;
