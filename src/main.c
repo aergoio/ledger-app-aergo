@@ -142,7 +142,7 @@ static void request_next_part() {
 
 #include "io.h"
 
-#include "sha256.h"
+#include "common/sha256.h"
 
 #include "crypto.h"
 

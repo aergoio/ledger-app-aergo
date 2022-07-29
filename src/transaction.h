@@ -4,8 +4,8 @@
 
 #define AddressVersion      0x42
 
-#include "account.h"
-#include "currency.h"
+#include "common/account.h"
+#include "common/currency.h"
 
 #define TXN_NORMAL         0
 #define TXN_GOVERNANCE     1
