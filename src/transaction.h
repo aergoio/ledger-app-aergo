@@ -4,6 +4,7 @@
 
 #define AddressVersion      0x42
 
+#include "sha256.h"
 #include "account.h"
 #include "currency.h"
 

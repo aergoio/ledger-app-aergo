@@ -1,9 +1,7 @@
 
-bool (*b58_sha256_impl)(void *, const void *, size_t) = NULL;
-
 static bool double_sha256(void *hash, const void *data, size_t datasz) {
   uint8_t buf[0x20];
-  return b58_sha256_impl(buf, data, datasz) && b58_sha256_impl(hash, buf, sizeof(buf));
+  return sha256(buf, data, datasz) && sha256(hash, buf, sizeof(buf));
 }
 
 static const char b58digits_ordered[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -62,15 +60,6 @@ bool base58check_encode(char *b58c, size_t *b58c_sz, uint8_t ver, const void *da
 
 /******************************************************************************/
 
-bool sha256(void *hash, const void *data, size_t len) {
-  static cx_sha256_t ctx;
-  cx_sha256_init(&ctx);
-  cx_hash(&ctx.header, 0, (unsigned char*) data, len, NULL, 0);
-  cx_hash(&ctx.header, CX_LAST, NULL, 0, hash, 32);
-  return true;
-}
-
 bool encode_account(const void *data, size_t datasize, char *out, size_t outsize){
-  b58_sha256_impl = sha256;
   return base58check_encode(out, &outsize, AddressVersion, data, datasize);
 }
