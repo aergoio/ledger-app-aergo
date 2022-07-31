@@ -3,10 +3,11 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "globals.h"
+#include "testing.h"
+#include "../src/globals.h"
 #include "../src/transaction.h"
 
-static int process_transaction(const unsigned char *buf, unsigned int len){
+static int parse_transaction(const unsigned char *buf, unsigned int len){
   bool is_first, is_last;
   unsigned char *ptr = (unsigned char *) buf;
   unsigned int remaining = len;
@@ -29,6 +30,6 @@ static int process_transaction(const unsigned char *buf, unsigned int len){
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-  process_transaction(data, size);
+  parse_transaction(data, size);
   return 0;
 }

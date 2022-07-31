@@ -2,51 +2,26 @@
 #include <stdint.h>
 #include <string.h>
 
+#define APP_VERSION_MAJOR   1
+#define APP_VERSION_MINOR   1
+
 #include "os.h"
 #include "cx.h"
 #include "ux.h"
 
 #include "glyphs.h"
 
+#include "apdu.h"
+
+#include "globals.h"
+
 #include "os_io_seproxyhal.h"
-
-#define APP_VERSION_MAJOR   1
-#define APP_VERSION_MINOR   1
-
-#define CLA      0xAE
-#define INS_GET_APP_VERSION 0x01
-#define INS_GET_PUBLIC_KEY  0x02
-#define INS_DISPLAY_ACCOUNT 0x03
-#define INS_SIGN_TXN        0x04
-#define INS_SIGN_MSG        0x08
-#define P1_FIRST 0x01
-#define P1_LAST  0x02
-#define P1_HEX   0x08
 
 
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 ux_state_t G_ux;
 bolos_ux_params_t G_ux_params;
-
-
-char global_title[20];
-char global_text[20];
-
-
-int  cmd_type;
-bool is_signing;
-bool is_first_part;
-bool is_last_part;
-bool txn_is_complete;
-bool has_partial_payload;
-
-
-static cx_sha256_t hash;
-static cx_sha256_t hash2;
-static cx_sha256_t hash3;
-unsigned char txn_hash[32];
-unsigned char payload_hash[32];
 
 
 // private and public keys
