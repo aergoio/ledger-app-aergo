@@ -1,0 +1,3 @@
+set -e
+clang test_tx_parser.c ../src/common/uint256.c ../fuzzing/sha256.c -I../fuzzing -lcmocka
+./a.out
