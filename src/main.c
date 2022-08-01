@@ -24,10 +24,16 @@ ux_state_t G_ux;
 bolos_ux_params_t G_ux_params;
 
 
-// private and public keys
-cx_ecfp_private_key_t privateKey;
-cx_ecfp_public_key_t  publicKey;
+// selected account - BIP32 path & public key
+
+#define MAX_BIP32_PATH 10
+
 static bool account_selected;
+
+uint32_t bip32_path[MAX_BIP32_PATH];
+uint8_t bip32_path_len;
+
+cx_ecfp_public_key_t public_key;
 
 
 // functions declarations
@@ -39,13 +45,17 @@ static void on_new_transaction_part(unsigned char *text, unsigned int len, bool 
 static void on_new_message(unsigned char *text, unsigned int len, bool as_hex);
 static void on_display_account(unsigned char *pubkey, int pklen);
 
-static bool derive_keys(unsigned char *bip32Path, unsigned char bip32PathLength);
-
 
 void ui_menu_main();
 void ui_menu_about();
 void start_display();
 
+
+#include "io.h"
+
+#include "common/sha256.h"
+
+#include "crypto.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ACTIONS
@@ -62,10 +72,7 @@ static void sign_transaction() {
   memcpy(G_io_apdu_buffer, txn_hash, 32);
 
   /* create a signature for the transaction hash */
-  tx = cx_ecdsa_sign((void*) &privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                     txn_hash, sizeof txn_hash,
-                     G_io_apdu_buffer+32, sizeof(G_io_apdu_buffer)-32, NULL);
-  G_io_apdu_buffer[32] &= 0xF0; // discard the parity information
+  tx = crypto_sign_message(G_io_apdu_buffer+32, sizeof(G_io_apdu_buffer)-32);
 
   if (tx > 0) {
     tx += 32; /* the txn hash */
@@ -114,12 +121,6 @@ static void request_next_part() {
 ////////////////////////////////////////////////////////////////////////////////
 // EXTERNAL FILES
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "io.h"
-
-#include "common/sha256.h"
-
-#include "crypto.h"
 
 #include "menu.h"
 
@@ -187,14 +188,14 @@ void app_main() {
           path = G_io_apdu_buffer + 5;
 
           if (len > 0) {
-            if (derive_keys(path,len) == false) {
+            if (crypto_select_account(path,len) == false) {
               THROW(0x6700);  // wrong length
             }
           } else if (!account_selected) {
             THROW(0x6985);  // invalid state
           }
 
-          memmove(G_io_apdu_buffer, publicKey.W, 33);
+          memmove(G_io_apdu_buffer, public_key.W, 33);
           tx = 33;
           THROW(0x9000);
         } break;
@@ -205,7 +206,7 @@ void app_main() {
             THROW(0x6985);  // invalid state
           }
 
-          on_display_account(publicKey.W, 33);
+          on_display_account(public_key.W, 33);
 
           tx = 0;
           THROW(0x9000);
