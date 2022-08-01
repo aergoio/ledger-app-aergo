@@ -301,9 +301,7 @@ static void on_new_transaction_part(unsigned char *buf, unsigned int len, bool i
 static void on_new_message(unsigned char *text, unsigned int len, bool as_hex){
 
   /* calculate the message hash */
-  cx_sha256_init(&hash3);
-  sha256_add_message(text, len);
-  cx_hash(&hash3.header, CX_LAST, NULL, 0, txn_hash, sizeof txn_hash);
+  sha256(txn_hash, text, len);
 
   /* display the message */
   clear_screens();

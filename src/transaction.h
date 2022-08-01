@@ -84,7 +84,6 @@ static char * stripstr(char *mainstr, char *separator) {
 
 #define sha256_add(ptr,len) cx_hash(&hash.header,0,(unsigned char*)ptr,len,NULL,0)
 #define sha256_add_payload(ptr,len) cx_hash(&hash2.header,0,(unsigned char*)ptr,len,NULL,0)
-#define sha256_add_message(ptr,len) cx_hash(&hash3.header,0,(unsigned char*)ptr,len,NULL,0)
 
 static bool parse_payload_part(unsigned char *ptr, unsigned int len);
 static bool parse_last_part(unsigned char *ptr, unsigned int len);

@@ -13,7 +13,6 @@ bool has_partial_payload;
 
 static cx_sha256_t hash;
 static cx_sha256_t hash2;
-static cx_sha256_t hash3;
 unsigned char txn_hash[32];
 unsigned char payload_hash[32];
 
