@@ -82,7 +82,7 @@ void sha256_transform(SHA256_CTX *ctx, const uchar data[])
 	ctx->state[7] += h;
 }
 
-void sha256_init(SHA256_CTX *ctx)
+void sha256_initialize(SHA256_CTX *ctx)
 {
 	ctx->datalen = 0;
 	ctx->bitlen = 0;
@@ -160,7 +160,7 @@ void sha256_final(SHA256_CTX *ctx, uchar hash[])
 bool sha256(void *hash, const void *data, size_t len) {
   SHA256_CTX ctx;
 
-  sha256_init(&ctx);
+  sha256_initialize(&ctx);
   sha256_update(&ctx, (const uchar*) data, len);
   sha256_final(&ctx, (uchar*)hash);
   return true;

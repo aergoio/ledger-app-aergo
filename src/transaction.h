@@ -82,8 +82,8 @@ static char * stripstr(char *mainstr, char *separator) {
   return ptr;
 }
 
-#define sha256_add(ptr,len) cx_hash(&hash.header,0,(unsigned char*)ptr,len,NULL,0)
-#define sha256_add_payload(ptr,len) cx_hash(&hash2.header,0,(unsigned char*)ptr,len,NULL,0)
+#define tx_hash_add(ptr,len) sha256_add(hash,ptr,len)
+#define payload_hash_add(ptr,len) sha256_add(hash2,ptr,len)
 
 static bool parse_payload_part(unsigned char *ptr, unsigned int len);
 static bool parse_last_part(unsigned char *ptr, unsigned int len);
@@ -103,8 +103,8 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
   // initialize hash
   memset(txn_hash, 0, sizeof txn_hash);
   memset(payload_hash, 0, sizeof payload_hash);
-  cx_sha256_init(&hash);
-  cx_sha256_init(&hash2);
+  sha256_init(hash);
+  sha256_init(hash2);
 
   // transaction type
   if (len < 1) goto loc_incomplete;
@@ -122,7 +122,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
   ptr += size;
   len -= size;
 
-  sha256_add(&txn.nonce, 8);
+  tx_hash_add(&txn.nonce, 8);
 
   pos = 2;
 
@@ -139,7 +139,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
   ptr += str_len;
   len -= str_len;
 
-  sha256_add(txn.account, str_len);
+  tx_hash_add(txn.account, str_len);
 
   pos = 3;
 
@@ -166,7 +166,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
     ptr += str_len;
     len -= str_len;
 
-    sha256_add(txn.recipient, str_len);
+    tx_hash_add(txn.recipient, str_len);
 
     if (str_len == 33) {
       encode_account(txn.recipient, str_len, recipient_address, sizeof recipient_address);
@@ -197,7 +197,7 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
     str_len = 1;
   }
 
-  sha256_add(txn.amount, str_len);
+  tx_hash_add(txn.amount, str_len);
 
   encode_amount(txn.amount, str_len, amount_str, sizeof amount_str);
 
@@ -224,8 +224,8 @@ static bool parse_first_part(unsigned char *ptr, unsigned int len){
     ptr += txn.payload_part_len;
     len -= txn.payload_part_len;
 
-    sha256_add(txn.payload, txn.payload_part_len);
-    sha256_add_payload(txn.payload, txn.payload_part_len);
+    tx_hash_add(txn.payload, txn.payload_part_len);
+    payload_hash_add(txn.payload, txn.payload_part_len);
   }
 
 
@@ -261,8 +261,8 @@ static bool parse_payload_part(unsigned char *ptr, unsigned int len){
     txn.payload_part_len = txn.payload_len - txn.payload_part_offset;
   }
 
-  sha256_add(txn.payload, txn.payload_part_len);
-  sha256_add_payload(txn.payload, txn.payload_part_len);
+  tx_hash_add(txn.payload, txn.payload_part_len);
+  payload_hash_add(txn.payload, txn.payload_part_len);
 
   ptr += txn.payload_part_len;
   len -= txn.payload_part_len;
@@ -309,7 +309,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
     txn.gasLimit = 0;
   }
 
-  sha256_add(&txn.gasLimit, 8);
+  tx_hash_add(&txn.gasLimit, 8);
 
   case 7:
   pos = 7;
@@ -331,7 +331,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
     str_len = 1;
   }
 
-  sha256_add(txn.gasPrice, str_len);
+  tx_hash_add(txn.gasPrice, str_len);
 
   case 8:
   pos = 8;
@@ -350,7 +350,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   }
   if (txn.type != txn_type) goto loc_invalid;
 
-  sha256_add(&txn.type, 4);
+  tx_hash_add(&txn.type, 4);
 
   case 9:
   pos = 9;
@@ -368,7 +368,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   //ptr += str_len;
   //len -= str_len;
 
-  sha256_add(txn.chainId, 32);
+  tx_hash_add(txn.chainId, 32);
 
   }
 
@@ -376,7 +376,7 @@ static bool parse_last_part(unsigned char *ptr, unsigned int len){
   txn_is_complete = true;
 
   /* calculate the transaction hash */
-  cx_hash(&hash.header, CX_LAST, NULL, 0, txn_hash, sizeof txn_hash);
+  sha256_finish(hash, txn_hash);
 
   return true;
 

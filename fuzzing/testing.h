@@ -11,7 +11,6 @@ jmp_buf jump_buffer;
 
 #include "sha256.h"
 typedef int cx_sha256_t;
-//#define cx_sha256_t SHA256_CTX
-#define cx_sha256_init(...)
-#define cx_hash(...)
-#define CX_LAST  111
+#define sha256_init(...)
+#define sha256_add(...)
+#define sha256_finish(...)

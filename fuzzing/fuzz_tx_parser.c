@@ -14,7 +14,6 @@ static int parse_transaction(const unsigned char *buf, unsigned int len){
   int ret;
 
   ret = setjmp(jump_buffer);
-  //if (ret != 0) return ret;
 
   while (remaining > 0 && ret == 0) {
     unsigned int bytes_now = remaining;

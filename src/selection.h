@@ -3,7 +3,7 @@ static void display_payload_hash() {
   int i;
 
   /* calculate the payload hash */
-  cx_hash(&hash2.header, CX_LAST, NULL, 0, payload_hash, sizeof payload_hash);
+  sha256_finish(hash2, payload_hash);
 
   add_screens("New Contract 1/6", (char*)payload_hash +  0, 6, false);
   add_screens("New Contract 2/6", (char*)payload_hash +  6, 6, false);
