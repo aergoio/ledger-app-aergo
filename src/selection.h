@@ -53,6 +53,11 @@ static void display_transaction() {
     /* set the screens to be displayed */
 
     clear_screens();
+
+    if (strcmp(amount_str,"0 AERGO") != 0) {
+      add_screens("Amount", amount_str, strlen(amount_str), false);
+    }
+
     add_screens("Contract", recipient_address, strlen(recipient_address), false);
 
     if (txn.payload) {
