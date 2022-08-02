@@ -657,6 +657,260 @@ static void test_tx_display_4(void **state) {
     assert_string_equal(display_text, "obj");
 }
 
+// DEPLOY
+static void test_tx_display_5(void **state) {
+    (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x06,
+        // transaction
+        0x08, 0x81, 0x08, 0x12, 0x21, 0x03, 0x8c, 0xb9,
+        0x2c, 0xde, 0xbf, 0x39, 0x98, 0x69, 0x09, 0x3c,
+        0xac, 0x47, 0xe3, 0x70, 0xd8, 0xa9, 0xfa, 0x50,
+        0x17, 0x30, 0x42, 0x23, 0xf9, 0xad, 0x1a, 0x8c,
+        0x0a, 0x05, 0xa9, 0x06, 0xa9, 0xcb, 0x22, 0x01,
+        0x00, 0x2a, 0x40, 0x30, 0x31, 0x30, 0x32, 0x30,
+        0x33, 0x30, 0x34, 0x30, 0x35, 0x30, 0x36, 0x30,
+        0x37, 0x30, 0x38, 0x30, 0x39, 0x30, 0x41, 0x30,
+        0x42, 0x30, 0x43, 0x30, 0x44, 0x30, 0x45, 0x30,
+        0x46, 0x46, 0x46, 0x30, 0x31, 0x30, 0x32, 0x30,
+        0x33, 0x30, 0x34, 0x30, 0x35, 0x30, 0x36, 0x30,
+        0x37, 0x30, 0x38, 0x30, 0x39, 0x30, 0x41, 0x30,
+        0x42, 0x30, 0x43, 0x30, 0x44, 0x30, 0x45, 0x30,
+        0x46, 0x46, 0x46, 0x3a, 0x01, 0x00, 0x40, 0x06,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+// test also: deploy with amount
+// test also: deploy with parameters to constructor
+
+    //click_next();
+    //assert_string_equal(display_title, "Amount");
+    //assert_string_equal(display_text, "1.5 AERGO");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 1/6");
+    assert_string_equal(display_text, "EF6F33393A9F");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 2/6");
+    assert_string_equal(display_text, "1C1837A12CAD");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 3/6");
+    assert_string_equal(display_text, "803E9F4BBA89");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 4/6");
+    assert_string_equal(display_text, "5B1E78F24C1D");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 5/6");
+    assert_string_equal(display_text, "BDCF6B5C7CA3");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 6/6");
+    assert_string_equal(display_text, "AD41");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 6/6");
+    assert_string_equal(display_text, "AD41");
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 5/6");
+    assert_string_equal(display_text, "BDCF6B5C7CA3");
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 4/6");
+    assert_string_equal(display_text, "5B1E78F24C1D");
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 3/6");
+    assert_string_equal(display_text, "803E9F4BBA89");
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 2/6");
+    assert_string_equal(display_text, "1C1837A12CAD");
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 1/6");
+    assert_string_equal(display_text, "EF6F33393A9F");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 6/6");
+    assert_string_equal(display_text, "AD41");
+
+    click_prev();
+    assert_string_equal(display_title, "New Contract 5/6");
+    assert_string_equal(display_text, "BDCF6B5C7CA3");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 6/6");
+    assert_string_equal(display_text, "AD41");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 1/6");
+    assert_string_equal(display_text, "EF6F33393A9F");
+
+    click_next();
+    assert_string_equal(display_title, "New Contract 2/6");
+    assert_string_equal(display_text, "1C1837A12CAD");
+}
+
+// GOVERNANCE
+static void test_tx_display_6(void **state) {
+    (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x82, 0x10, 0x12, 0x21, 0x03, 0x8c, 0xb9,
+        0x2c, 0xde, 0xbf, 0x39, 0x98, 0x69, 0x09, 0x3c,
+        0xac, 0x47, 0xe3, 0x70, 0xd8, 0xa9, 0xfa, 0x50,
+        0x17, 0x30, 0x42, 0x23, 0xf9, 0xad, 0x1a, 0x8c,
+        0x0a, 0x05, 0xa9, 0x06, 0xa9, 0xcb, 0x1a, 0x10,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x65, 0x6e,
+        0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65,
+        0x22, 0x01, 0x00, 0x2a, 0x56, 0x7b, 0x22, 0x4e,
+        0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22, 0x61, 0x70,
+        0x70, 0x65, 0x6e, 0x64, 0x41, 0x64, 0x6d, 0x69,
+        0x6e, 0x22, 0x2c, 0x22, 0x41, 0x72, 0x67, 0x73,
+        0x22, 0x3a, 0x5b, 0x22, 0x41, 0x6d, 0x4d, 0x44,
+        0x45, 0x79, 0x63, 0x33, 0x36, 0x46, 0x4e, 0x58,
+        0x42, 0x33, 0x46, 0x71, 0x31, 0x61, 0x36, 0x31,
+        0x48, 0x65, 0x56, 0x4a, 0x52, 0x54, 0x34, 0x79,
+        0x73, 0x73, 0x4d, 0x45, 0x50, 0x31, 0x31, 0x4e,
+        0x57, 0x57, 0x45, 0x39, 0x51, 0x78, 0x38, 0x79,
+        0x68, 0x66, 0x52, 0x4b, 0x65, 0x78, 0x76, 0x71,
+        0x22, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_prev();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_prev();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_prev();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_next();
+    assert_string_equal(display_title, "Add Admin");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+}
+
 // payload: test<0102AF5D>when in hex
 
 int main() {
@@ -665,6 +919,8 @@ int main() {
       cmocka_unit_test(test_tx_display_2),
       cmocka_unit_test(test_tx_display_3),
       cmocka_unit_test(test_tx_display_4),
+      cmocka_unit_test(test_tx_display_5),
+      cmocka_unit_test(test_tx_display_6),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
