@@ -52,7 +52,7 @@ static int parse_transaction(const unsigned char *buf, unsigned int len){
 // TEST CASES -------------------------------
 
 // NORMAL / LEGACY
-static void test_tx_parsing_1(void **state) {
+static void test_tx_parsing_normal(void **state) {
     (void) state;
     char account_address[EncodedAddressLength+1];
     char *payload = NULL;
@@ -113,7 +113,7 @@ static void test_tx_parsing_1(void **state) {
 }
 
 // TRANSFER
-static void test_tx_parsing_2(void **state) {
+static void test_tx_parsing_transfer(void **state) {
     (void) state;
     char account_address[EncodedAddressLength+1];
     char *payload = NULL;
@@ -170,7 +170,7 @@ static void test_tx_parsing_2(void **state) {
 }
 
 // CALL
-static void test_tx_parsing_3(void **state) {
+static void test_tx_parsing_call(void **state) {
     (void) state;
     char account_address[EncodedAddressLength+1];
     char *payload = NULL;
@@ -230,7 +230,7 @@ static void test_tx_parsing_3(void **state) {
 }
 
 // MULTICALL
-static void test_tx_parsing_4(void **state) {
+static void test_tx_parsing_multicall(void **state) {
     (void) state;
     char account_address[EncodedAddressLength+1];
     char *payload = NULL;
@@ -291,7 +291,7 @@ static void test_tx_parsing_4(void **state) {
 }
 
 // DEPLOY
-static void test_tx_parsing_5(void **state) {
+static void test_tx_parsing_deploy(void **state) {
     (void) state;
     char account_address[EncodedAddressLength+1];
     char *payload = NULL;
@@ -351,7 +351,7 @@ static void test_tx_parsing_5(void **state) {
 }
 
 // GOVERNANCE
-static void test_tx_parsing_6(void **state) {
+static void test_tx_parsing_governance(void **state) {
     (void) state;
     char account_address[EncodedAddressLength+1];
     char *payload = NULL;
@@ -418,7 +418,7 @@ static void test_tx_parsing_6(void **state) {
 // INVALID CONTENT --------------
 
 // DIFFERENT TYPE
-static void test_tx_parsing_7(void **state) {
+static void test_tx_parsing_diff_type(void **state) {
     (void) state;
 
     // clang-format off
@@ -456,7 +456,7 @@ static void test_tx_parsing_7(void **state) {
 }
 
 // WITHOUT NONCE
-static void test_tx_parsing_8(void **state) {
+static void test_tx_parsing_without_nonce(void **state) {
     (void) state;
 
     // clang-format off
@@ -494,7 +494,7 @@ static void test_tx_parsing_8(void **state) {
 }
 
 // WITHOUT ACCOUNT
-static void test_tx_parsing_9(void **state) {
+static void test_tx_parsing_without_account(void **state) {
     (void) state;
 
     // clang-format off
@@ -529,7 +529,7 @@ static void test_tx_parsing_9(void **state) {
 }
 
 // WITHOUT CHAIN_ID
-static void test_tx_parsing_10(void **state) {
+static void test_tx_parsing_without_chain_id(void **state) {
     (void) state;
 
     // clang-format off
@@ -567,7 +567,7 @@ static void test_tx_parsing_10(void **state) {
 }
 
 // PARTIAL CHAIN_ID - INCOMPLETE TXN
-static void test_tx_parsing_11(void **state) {
+static void test_tx_parsing_incomplete_txn(void **state) {
     (void) state;
 
     // clang-format off
@@ -606,18 +606,18 @@ static void test_tx_parsing_11(void **state) {
 
 int main() {
     const struct CMUnitTest tests[] = {
-      cmocka_unit_test(test_tx_parsing_1),
-      cmocka_unit_test(test_tx_parsing_2),
-      cmocka_unit_test(test_tx_parsing_3),
-      cmocka_unit_test(test_tx_parsing_4),
-      cmocka_unit_test(test_tx_parsing_5),
-      cmocka_unit_test(test_tx_parsing_6),
+      cmocka_unit_test(test_tx_parsing_normal),
+      cmocka_unit_test(test_tx_parsing_transfer),
+      cmocka_unit_test(test_tx_parsing_call),
+      cmocka_unit_test(test_tx_parsing_multicall),
+      cmocka_unit_test(test_tx_parsing_deploy),
+      cmocka_unit_test(test_tx_parsing_governance),
       // invalid content
-      cmocka_unit_test(test_tx_parsing_7),
-      cmocka_unit_test(test_tx_parsing_8),
-      cmocka_unit_test(test_tx_parsing_9),
-      cmocka_unit_test(test_tx_parsing_10),
-      cmocka_unit_test(test_tx_parsing_11),
+      cmocka_unit_test(test_tx_parsing_diff_type),
+      cmocka_unit_test(test_tx_parsing_without_nonce),
+      cmocka_unit_test(test_tx_parsing_without_account),
+      cmocka_unit_test(test_tx_parsing_without_chain_id),
+      cmocka_unit_test(test_tx_parsing_incomplete_txn),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

@@ -174,7 +174,7 @@ static void click_prev() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // NORMAL / LEGACY
-static void test_tx_display_1(void **state) {
+static void test_tx_display_normal(void **state) {
     (void) state;
 
     // clang-format off
@@ -250,7 +250,7 @@ static void test_tx_display_1(void **state) {
 }
 
 // TRANSFER
-static void test_tx_display_2(void **state) {
+static void test_tx_display_transfer(void **state) {
     (void) state;
 
     // clang-format off
@@ -364,7 +364,7 @@ static void test_tx_display_2(void **state) {
 }
 
 // CALL
-static void test_tx_display_3(void **state) {
+static void test_tx_display_call(void **state) {
     (void) state;
 
     // clang-format off
@@ -500,7 +500,7 @@ static void test_tx_display_3(void **state) {
 }
 
 // MULTICALL
-static void test_tx_display_4(void **state) {
+static void test_tx_display_multicall(void **state) {
     (void) state;
 
     // clang-format off
@@ -658,7 +658,7 @@ static void test_tx_display_4(void **state) {
 }
 
 // DEPLOY
-static void test_tx_display_5(void **state) {
+static void test_tx_display_deploy(void **state) {
     (void) state;
 
     // clang-format off
@@ -790,7 +790,7 @@ static void test_tx_display_5(void **state) {
 }
 
 // GOVERNANCE
-static void test_tx_display_6(void **state) {
+static void test_tx_display_governance(void **state) {
     (void) state;
 
     // clang-format off
@@ -915,12 +915,12 @@ static void test_tx_display_6(void **state) {
 
 int main() {
     const struct CMUnitTest tests[] = {
-      cmocka_unit_test(test_tx_display_1),
-      cmocka_unit_test(test_tx_display_2),
-      cmocka_unit_test(test_tx_display_3),
-      cmocka_unit_test(test_tx_display_4),
-      cmocka_unit_test(test_tx_display_5),
-      cmocka_unit_test(test_tx_display_6),
+      cmocka_unit_test(test_tx_display_normal),
+      cmocka_unit_test(test_tx_display_transfer),
+      cmocka_unit_test(test_tx_display_call),
+      cmocka_unit_test(test_tx_display_multicall),
+      cmocka_unit_test(test_tx_display_deploy),
+      cmocka_unit_test(test_tx_display_governance),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
