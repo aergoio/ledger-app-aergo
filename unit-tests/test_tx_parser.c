@@ -169,8 +169,8 @@ static void test_tx_parsing_transfer(void **state) {
     assert_false(txn.is_enterprise);
 }
 
-// CALL
-static void test_tx_parsing_call(void **state) {
+// CALL - 1
+static void test_tx_parsing_call_1(void **state) {
     (void) state;
     char account_address[EncodedAddressLength+1];
     char *payload = NULL;
@@ -222,6 +222,63 @@ static void test_tx_parsing_call(void **state) {
     assert_string_equal(amount_str, "0 AERGO");
     assert_int_equal(txn.payload_len, 0x21);
     assert_string_equal(payload, "{\"Name\":\"hello\",\"Args\":[\"world\"]}");
+    assert_string_equal(txn.gasPrice, "");
+    assert_string_equal(chainIdHex, "524845C24CD3E53AECBCDA8E315D62DC95A7F2F82548930BC2FCC986BF7453BD");
+    assert_false(txn.is_name);
+    assert_false(txn.is_system);
+    assert_false(txn.is_enterprise);
+}
+
+// CALL - 2
+static void test_tx_parsing_call_2(void **state) {
+    (void) state;
+    char account_address[EncodedAddressLength+1];
+    char *payload = NULL;
+    char chainIdHex[65];
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x05,
+        // transaction
+        0x08, 0x80, 0x04, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x21,
+        0x03, 0x8c, 0xb9, 0x2c, 0xde, 0xbf, 0x39, 0x98,
+        0x69, 0x09, 0x3c, 0xac, 0x47, 0xe3, 0x70, 0xd8,
+        0xa9, 0xfa, 0x50, 0x17, 0x30, 0x42, 0x23, 0xf9,
+        0xad, 0x1a, 0x8c, 0x0a, 0x05, 0xa9, 0x06, 0xa9,
+        0xcb, 0x22, 0x08, 0x01, 0xb6, 0x9b, 0x4b, 0xa6,
+        0x30, 0xf3, 0x4e, 0x3a, 0x01, 0x00, 0x40, 0x05,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    memset(&txn, 0, sizeof(struct txn));
+
+    int status = parse_transaction(raw_tx, sizeof(raw_tx));
+
+    assert_int_equal(status, 0);
+
+    encode_account(txn.account, 33, account_address, sizeof account_address);
+    if (txn.payload_len > 0) {
+      payload = malloc(txn.payload_len + 1);
+      strncpy(payload, txn.payload, txn.payload_len);
+    }
+    to_hex(txn.chainId, 32, chainIdHex);
+
+    assert_int_equal(txn.type, 5);
+    assert_int_equal(txn.nonce, 512);
+    assert_string_equal(account_address, "AmMhNZVhirdVrgL11koUh1j6TPnH118KqxdihFD9YXHD63VpyFGu");
+    assert_string_equal(recipient_address, "AmPWwmdgpvPRPtykgCCWvVdZS6h7b6w9UzcLcsEd64mzKJ9RCAhp");
+    assert_string_equal(amount_str, "0.123456789012345678 AERGO");
+    assert_int_equal(txn.payload_len, 0);
+    assert_null(payload);
     assert_string_equal(txn.gasPrice, "");
     assert_string_equal(chainIdHex, "524845C24CD3E53AECBCDA8E315D62DC95A7F2F82548930BC2FCC986BF7453BD");
     assert_false(txn.is_name);
@@ -608,7 +665,8 @@ int main() {
     const struct CMUnitTest tests[] = {
       cmocka_unit_test(test_tx_parsing_normal),
       cmocka_unit_test(test_tx_parsing_transfer),
-      cmocka_unit_test(test_tx_parsing_call),
+      cmocka_unit_test(test_tx_parsing_call_1),
+      cmocka_unit_test(test_tx_parsing_call_2),
       cmocka_unit_test(test_tx_parsing_multicall),
       cmocka_unit_test(test_tx_parsing_deploy),
       cmocka_unit_test(test_tx_parsing_governance),
