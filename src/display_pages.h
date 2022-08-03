@@ -12,10 +12,11 @@ struct items {
   char *text;
   unsigned int size;
   bool in_hex;
+  bool is_call;
   bool is_multicall;
 };
 
-static struct items screens[8];
+static struct items screens[10];
 static int num_screens;
 
 static int current_screen;
@@ -27,16 +28,7 @@ void (*display_page_callback)(bool);
 
 
 static char parsed_text[30];     // remaining part
-
 static unsigned int  parsed_size;
-static unsigned int  last_utf8_char;
-static unsigned int  last_char;
-static bool is_in_command;
-static bool is_in_string;
-static bool in_internal_str;
-static bool is_in_object;
-static bool is_in_array;
-static int  obj_level;
 
 static unsigned char*input_text;
 static unsigned int  input_size;
@@ -58,6 +50,7 @@ static void reset_screen();
 static bool on_last_screen();
 static bool on_last_page();
 
+static void reset_text_parser();
 
 ////////////////////////////////////////////////////////////////////////////////
 // SCREENS | PAGES
@@ -114,15 +107,7 @@ static bool prepare_screen(int n) {
   input_pos  = 0;
 
   // parsed text (output)
-  last_utf8_char = 0;
-  last_char = 0;
-  is_in_command = false;
-  is_in_string = false;
-  in_internal_str = false;
-  is_in_object = false;
-  is_in_array = false;
-  obj_level = 0;
-  parsed_size = 0;
+  reset_text_parser();
   return parse_next_page();
 
 }
@@ -153,15 +138,7 @@ static void reset_screen() {
   input_size = 0;
   input_pos  = 0;
 
-  last_utf8_char = 0;
-  last_char = 0;
-  is_in_command = false;
-  is_in_string = false;
-  in_internal_str = false;
-  is_in_object = false;
-  is_in_array = false;
-  obj_level = 0;
-  parsed_size = 0;
+  reset_text_parser();
 
 }
 
@@ -285,7 +262,7 @@ static void get_next_data(int move_to, void(*callback)(bool)) {
     return;
   }
 
-  if (move_to == PAGE_PREV) {
+  if (move_to == PAGE_PREV || move_to == PAGE_LAST) {
     if (!is_first_part) {
       // request the first chunk of the transaction, and other
       // chunks until it has the requested page to display

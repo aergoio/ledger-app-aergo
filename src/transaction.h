@@ -69,6 +69,7 @@ static unsigned int decode_varint(unsigned char *buf, unsigned int max_len, uint
   return len;
 }
 
+/*
 static char * stripstr(char *mainstr, char *separator) {
   char *ptr;
 
@@ -81,6 +82,7 @@ static char * stripstr(char *mainstr, char *separator) {
   ptr += strlen(separator);
   return ptr;
 }
+*/
 
 #define tx_hash_add(ptr,len) sha256_add(hash,ptr,len)
 #define payload_hash_add(ptr,len) sha256_add(hash2,ptr,len)
@@ -400,10 +402,15 @@ loc_invalid:
 **
 **  {"Name":"some_function","Args":[<parameters>]}
 **  {"Name":"some_function"}
+**
+** For this function, the entire first part must be present:
+**
+**  {"Name":"some_function","Args":[
+**  {"Name":"some_function"}
 */
 static bool parse_payload(char **pfunction_name, char **pargs, unsigned int *pargs_len) {
-  char *name, *args, last_char;
-  unsigned int len, args_len;
+  char *name, *args, *end, *ptr;
+  unsigned int len, args_len = 0;
 
   if (!txn.payload || txn.payload_len==0) goto loc_invalid;
 
@@ -414,27 +421,30 @@ static bool parse_payload(char **pfunction_name, char **pargs, unsigned int *par
     len = txn.payload_len;
   }
 
-  txn.payload[len] = 0; /* null terminator used by strcmp and stripstr */
-
   if (strncmp(txn.payload, "{\"Name\":\"", 9) != 0) goto loc_invalid;
   name = txn.payload + 9;
-  args = stripstr(name, "\",\"Args\":[");
+  end  = txn.payload + len;
+  for (ptr = name; ptr < end && *ptr && *ptr!='"'; ptr++) {
+    //name_len++;
+  }
+  if (ptr == end || *ptr != '"') goto loc_invalid;
+  *ptr = 0;  /* null terminator used by strcmp */
+
+  ptr++;
+  if (strcmp(ptr, ",\"Args\":[") == 0) {
+    args = ptr + 9;
+  } else {
+    args = NULL;
+  }
 
   if (has_partial_payload) {
     args_len = txn.payload + len - args;
   } else {
     if (args) {
-      last_char = ']';
-    } else {
-      last_char = '"';
-    }
-    if (txn.payload[txn.payload_len-1] != '}') goto loc_invalid;
-    if (txn.payload[txn.payload_len-2] != last_char) goto loc_invalid;
-    txn.payload[txn.payload_len-2] = 0;
-    if (args) {
+      if (txn.payload[txn.payload_len-1] != '}') goto loc_invalid;
+      if (txn.payload[txn.payload_len-2] != ']') goto loc_invalid;
+      txn.payload[txn.payload_len-2] = 0;
       args_len = strlen(args);
-    } else {
-      args_len = 0;
     }
   }
 
@@ -445,6 +455,33 @@ static bool parse_payload(char **pfunction_name, char **pargs, unsigned int *par
   return true;
 loc_invalid:
   return false;
+}
+
+static bool parse_payload_function(char **pfunction_name, unsigned int *psize) {
+  unsigned int len;
+
+  if (!txn.payload || txn.payload_len==0) goto loc_invalid;
+
+  /* is the payload completely downloaded? */
+  if (has_partial_payload) {
+    len = txn.payload_part_len;
+  } else {
+    len = txn.payload_len;
+  }
+
+  if (strncmp(txn.payload, "{\"Name\":\"", 9) != 0) goto loc_invalid;
+
+  *pfunction_name = txn.payload + 9;
+  *psize = len - 9;
+
+  return true;
+loc_invalid:
+  return false;
+}
+
+void get_payload_info(unsigned int *ppayload_part_offset, unsigned int *ppayload_len) {
+  *ppayload_part_offset = txn.payload_part_offset;
+  *ppayload_len = txn.payload_len;
 }
 
 static void parse_transaction_part(unsigned char *buf, unsigned int len, bool is_first, bool is_last){

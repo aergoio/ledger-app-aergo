@@ -63,14 +63,13 @@ static void display_transaction() {
     if (txn.payload) {
       /* parse the payload */
       /* {"Name":"some_function","Args":[<parameters>]} */
-      if (parse_payload(&function_name, &args, &size) == false) goto loc_invalid;
-      if (!args) goto loc_invalid;
-
-      add_screens("Function", function_name, strlen(function_name), true);
-      add_screens("Parameters", args, size, true);
+      if (parse_payload_function(&function_name, &size) == false) goto loc_invalid;
+      add_screens("Function", function_name, size, true);
+      screens[num_screens-1].is_call = true;
+      //add_screens("Parameters", args, size, true);
     } else {
       function_name = "default";
-      add_screens("Function", function_name, strlen(function_name), false);
+      add_screens("Function", function_name, strlen(function_name), true);
     }
 
     break;
