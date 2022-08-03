@@ -28,14 +28,21 @@ static void display_transaction() {
   char *function_name, *args;
   unsigned int size;
 
+  clear_screens();
+
+  if (strcmp(amount_str,"0 AERGO") != 0) {
+    add_screens("Amount", amount_str, strlen(amount_str), false);
+  }
+
   /* determine what to display according to the transaction type */
   switch (txn_type) {
   case TXN_TRANSFER:
 
     //pos = 1;
 
-    clear_screens();
-    add_screens("Amount", amount_str, strlen(amount_str), false);
+    if (num_screens == 0) {
+      add_screens("Amount", amount_str, strlen(amount_str), false);
+    }
     add_screens("Recipient", recipient_address, strlen(recipient_address), false);
     if (txn.payload) {
       add_screens("Payload", txn.payload, txn.payload_part_len, true);
@@ -51,12 +58,6 @@ static void display_transaction() {
     pos = 2;
 
     /* set the screens to be displayed */
-
-    clear_screens();
-
-    if (strcmp(amount_str,"0 AERGO") != 0) {
-      add_screens("Amount", amount_str, strlen(amount_str), false);
-    }
 
     add_screens("Contract", recipient_address, strlen(recipient_address), false);
 
@@ -85,7 +86,6 @@ static void display_transaction() {
       goto loc_invalid;
     }
 
-    clear_screens();
     add_screens("MultiCall", txn.payload+1, txn.payload_part_len-1, true);
     screens[num_screens-1].is_multicall = true;
 
@@ -105,13 +105,11 @@ static void display_transaction() {
       // {"Name":"v1stake"}
       if (strcmp(function_name,"v1stake") == 0) {
 
-        clear_screens();
         add_screens("Stake", amount_str, strlen(amount_str), true);
 
       // {"Name":"v1unstake"}
       } else if (strcmp(function_name,"v1unstake") == 0) {
 
-        clear_screens();
         add_screens("Unstake", amount_str, strlen(amount_str), true);
 
       // {"Name":"v1voteBP","Args":[<peer IDs>]}
@@ -119,7 +117,6 @@ static void display_transaction() {
 
         if (!args) goto loc_invalid;
 
-        clear_screens();
         add_screens("BP Vote", args, size, true);
 
       // {"Name":"v1voteDAO","Args":[<DAO ID>,<candidate>]}
@@ -127,7 +124,6 @@ static void display_transaction() {
 
         if (!args) goto loc_invalid;
 
-        clear_screens();
         add_screens("DAO Vote", args, size, true);
 
       } else {
@@ -144,13 +140,11 @@ static void display_transaction() {
       // {"Name":"v1createName","Args":[<a name string>]}
       if (strcmp(function_name,"v1createName") == 0) {
 
-        clear_screens();
         add_screens("Create Name", args, size, true);
 
       // {"Name":"v1updateName","Args":[<a name string>, <new owner address>]}
       } else if (strcmp(function_name,"v1updateName") == 0) {
 
-        clear_screens();
         add_screens("Update Name", args, size, true);
 
       } else {
@@ -167,37 +161,31 @@ static void display_transaction() {
       // {"Name":"appendAdmin","Args":[<new admin address>]}
       if (strcmp(function_name,"appendAdmin") == 0) {
 
-        clear_screens();
         add_screens("Add Admin", args, size, true);
 
       // {"Name":"removeAdmin","Args":[<admin address>]}
       } else if (strcmp(function_name,"removeAdmin") == 0) {
 
-        clear_screens();
         add_screens("Remove Admin", args, size, true);
 
       // {"Name":"appendConf","Args":[<config key>,<config value>]}
       } else if (strcmp(function_name,"appendConf") == 0) {
 
-        clear_screens();
         add_screens("Add Config", args, size, true);
 
       // {"Name":"removeConf","Args":[<config key>,<config value>]}
       } else if (strcmp(function_name,"removeConf") == 0) {
 
-        clear_screens();
         add_screens("Remove Config", args, size, true);
 
       // {"Name":"enableConf","Args":[<config key>,<true|false>]}
       } else if (strcmp(function_name,"enableConf") == 0) {
 
-        clear_screens();
         add_screens("Enable Config", args, size, true);
 
       // {"Name":"changeCluster","Args":[{"command":"add","name":"[node name]","address":"[peer address]","peerid":"[peer id]"}]}
       } else if (strcmp(function_name,"changeCluster") == 0) {
 
-        clear_screens();
         add_screens("Change Cluster", args, size, true);
 
       } else {
@@ -216,7 +204,6 @@ static void display_transaction() {
 
     //pos = 12;
 
-    clear_screens();
     display_payload_hash();
 
     break;
@@ -225,7 +212,6 @@ static void display_transaction() {
 
     //pos = 13;
 
-    clear_screens();
     add_screens("Redeploy", recipient_address, strlen(recipient_address), false);
     display_payload_hash();
 
@@ -235,10 +221,6 @@ static void display_transaction() {
 
     pos = 14;
 
-    clear_screens();
-    if (txn.amount[0] != 0) {
-      add_screens("Amount", amount_str, strlen(amount_str), false);
-    }
     if (recipient_address[0] != 0) {
       add_screens("Recipient", recipient_address, strlen(recipient_address), false);
     }
