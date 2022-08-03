@@ -14,3 +14,6 @@ typedef int cx_sha256_t;
 #define sha256_init(...)
 #define sha256_add(...)
 #define sha256_finish(...)
+
+
+#define strlcpy strncpy
