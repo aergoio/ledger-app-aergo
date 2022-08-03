@@ -9,6 +9,7 @@ static unsigned int last_char;
 static bool is_in_command;
 static bool is_in_string;
 static bool in_internal_str;
+static bool is_in_literal;
 static bool is_in_object;
 static bool is_in_array;
 static int  obj_level;
@@ -24,11 +25,16 @@ static void reset_text_parser() {
   is_in_command = false;
   is_in_string = false;
   in_internal_str = false;
+  is_in_literal = false;
   is_in_object = false;
   is_in_array = false;
   obj_level = 0;
   parsed_size = 0;
 
+}
+
+static bool is_json_literal(unsigned char c) {
+  return (strchr("truefalsn0123456789.", c) > 0);
 }
 
 /*
@@ -169,6 +175,14 @@ static bool parse_multicall_page() {
       } else {
         copy_it = true;
       }
+    } else if (is_in_literal) {
+      if (!is_json_literal(c)) {
+        is_in_literal = false;
+        input_pos--;  // read this char again later
+        return true;  // display the page
+      } else {
+        copy_it = true;
+      }
     } else if (in_internal_str) {
       copy_it = true;
       if (c == '"' && last_char != '\\') {
@@ -222,6 +236,9 @@ static bool parse_multicall_page() {
       } else if (c == '{') {
         is_in_object = true;
         obj_level = 1;
+        copy_it = true;
+      } else if (is_json_literal(c)) {
+        is_in_literal = true;
         copy_it = true;
       }
     }
