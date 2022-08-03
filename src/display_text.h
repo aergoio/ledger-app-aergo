@@ -103,10 +103,11 @@ static bool parse_page_text() {  // in_hex as argument?
     }
 
     bool in_hex = screens[current_screen-1].in_hex;
+    bool use_hex_delimiters = !in_hex;
     if (c < 0x20 && c != '\n' && c != '\r' && c != '\t') {
       in_hex = true;
     }
-    if (!in_hex) {
+    if (use_hex_delimiters && !in_hex) {
       if (already_in_hex) {
         already_in_hex = false;
         parsed_text[parsed_size++] = '>';
@@ -114,7 +115,7 @@ static bool parse_page_text() {  // in_hex as argument?
     }
 
     if (in_hex) {
-      if (!already_in_hex) {
+      if (use_hex_delimiters && !already_in_hex) {
         already_in_hex = true;
         parsed_text[parsed_size++] = '<';
       }
