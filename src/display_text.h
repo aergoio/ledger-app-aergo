@@ -13,6 +13,7 @@ static bool is_in_literal;
 static bool is_in_object;
 static bool is_in_array;
 static int  obj_level;
+static bool in_hex;
 
 void get_payload_info(unsigned int *ppayload_part_offset, unsigned int *ppayload_len);
 
@@ -29,6 +30,7 @@ static void reset_text_parser() {
   is_in_object = false;
   is_in_array = false;
   obj_level = 0;
+  in_hex = false;
   parsed_size = 0;
 
 }
@@ -102,10 +104,16 @@ static bool parse_page_text() {  // in_hex as argument?
       }
     }
 
-    bool in_hex = screens[current_screen-1].in_hex;
-    bool use_hex_delimiters = !in_hex;
-    if (c < 0x20 && c != '\n' && c != '\r' && c != '\t') {
+    bool use_hex_delimiters = true;
+    if (screens[current_screen-1].in_hex) {
       in_hex = true;
+      use_hex_delimiters = false;
+    } else if (c < 0x20) {
+      if (c != '\n' && c != '\r' && c != '\t') {
+        in_hex = true;  // otherwise keep the same format as the last char
+      }
+    } else {
+      in_hex = false;
     }
     if (use_hex_delimiters && !in_hex) {
       if (already_in_hex) {
@@ -127,9 +135,9 @@ static bool parse_page_text() {  // in_hex as argument?
       snprintf(&parsed_text[parsed_size], sizeof(parsed_text) - parsed_size, "%X", c);
       parsed_size += strlen(&parsed_text[parsed_size]);
     } else if (c == '\n' || c == '\r') {
-      parsed_text[parsed_size++] = ' ';
+      //parsed_text[parsed_size++] = ' ';
       parsed_text[parsed_size++] = '|';
-      parsed_text[parsed_size++] = ' ';
+      //parsed_text[parsed_size++] = ' ';
     } else if (c == '\t') {
       parsed_text[parsed_size++] = ' ';
     } else {
@@ -251,10 +259,9 @@ static bool parse_multicall_page() {
         snprintf(&parsed_text[parsed_size], sizeof(parsed_text) - parsed_size, "%X", c);
         parsed_size += strlen(&parsed_text[parsed_size]);
       } else if (c == '\n' || c == '\r') {
-        parsed_text[parsed_size++] = ' ';
+        //parsed_text[parsed_size++] = ' ';
         parsed_text[parsed_size++] = '|';
-        parsed_text[parsed_size++] = ' ';
-      //} else if (c == 0x08) { /* backspace should not be hidden */
+        //parsed_text[parsed_size++] = ' ';
       } else if (c < 0x20) {
         parsed_text[parsed_size++] = '?';
       } else {
