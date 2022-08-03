@@ -431,7 +431,7 @@ static bool parse_payload(char **pfunction_name, char **pargs, unsigned int *par
   *ptr = 0;  /* null terminator used by strcmp */
 
   ptr++;
-  if (strcmp(ptr, ",\"Args\":[") == 0) {
+  if (strncmp(ptr, ",\"Args\":[", 9) == 0) {
     args = ptr + 9;
   } else {
     args = NULL;
