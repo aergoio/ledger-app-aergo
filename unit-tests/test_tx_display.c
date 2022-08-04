@@ -1867,6 +1867,183 @@ static void test_tx_display_governance(void **state) {
     assert_string_equal(display_text, "B3Fq1a61HeVJR");
 }
 
+// MESSAGE
+static void test_display_message(void **state) {
+    (void) state;
+
+    unsigned char message[] = "Hello World! This message must be signed";
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    on_new_message(message, strlen((char*)message), false);
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "Hello World! ");
+
+    click_next();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "This message ");
+
+    click_next();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "must be signe");
+
+    click_next();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "d");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "d");
+
+    click_prev();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "must be signe");
+
+    click_prev();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "This message ");
+
+    click_prev();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "Hello World! ");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "d");
+
+    click_prev();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "must be signe");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "d");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "Hello World! ");
+
+    click_next();
+    assert_string_equal(display_title, "Message");
+    assert_string_equal(display_text, "This message ");
+}
+
+// Message ADDRESS
+static void test_display_account(void **state) {
+    (void) state;
+
+    // clang-format off
+    uint8_t public_key_bytes[] = {
+        0x01, 0x02,
+        0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
+        0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12,
+        0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a,
+        0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    on_display_account(public_key_bytes, sizeof(public_key_bytes));
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "3DJaPUm8nu9hx");
+
+    click_next();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "YPGZfFDzEBx2r");
+
+    click_next();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "PbTzVnou5nPP9");
+
+    click_next();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "3ytgqbFmGzhv");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "3ytgqbFmGzhv");
+
+    click_prev();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "PbTzVnou5nPP9");
+
+    click_prev();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "YPGZfFDzEBx2r");
+
+    click_prev();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "3DJaPUm8nu9hx");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "3ytgqbFmGzhv");
+
+    click_prev();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "PbTzVnou5nPP9");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "3ytgqbFmGzhv");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "3DJaPUm8nu9hx");
+
+    click_next();
+    assert_string_equal(display_title, "Account");
+    assert_string_equal(display_text, "YPGZfFDzEBx2r");
+}
+
 void debug_it() {
 
     // clang-format off
@@ -1914,6 +2091,10 @@ int main() {
       cmocka_unit_test(test_tx_display_deploy_1),
       cmocka_unit_test(test_tx_display_deploy_2),
       cmocka_unit_test(test_tx_display_governance),
+      // message
+      cmocka_unit_test(test_display_message),
+      // account address
+      cmocka_unit_test(test_display_account),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
