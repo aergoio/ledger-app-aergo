@@ -906,7 +906,75 @@ static void test_tx_display_call_big(void **state) {
 
     click_next();
     assert_string_equal(display_title, "Parameters");
-    assert_string_equal(display_text, "eter with spaces\",123,2.5,true,[11,\"22\",3.3],{\"one\":1,\"two\":2},{\"from\":\"AmMDEyc36FNXB3Fq1a61HeVJRT4yssMEP11NWWE9Qx8yhfRKexvq\",\"to\":\"AmP4AYWHKrxnPqvoUATyJhMwarzJAphWdkosz24AWgiD2sQ18si9\",\"hash\":\"0102030405060708090A0B0C0D0E0FFF\"}");
+    assert_string_equal(display_text, "eter with spa");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "ces\",123,2.5,");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "true,[11,\"22\"");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, ",3.3],{\"one\":");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "1,\"two\":2},{\"");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "from\":\"AmMDEy");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "c36FNXB3Fq1a6");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "1HeVJRT4yssME");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "P11NWWE9Qx8yh");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "fRKexvq\",\"to\"");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, ":\"AmP4AYWHKrx");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "nPqvoUATyJhMw");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "arzJAphWdkosz");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "24AWgiD2sQ18s");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "i9\",\"hash\":\"0");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "1020304050607");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "08090A0B0C0D0");
+
+    click_next();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "E0FFF\"}");
 
     click_next();
     assert_string_equal(display_title, "Review");
@@ -915,8 +983,92 @@ static void test_tx_display_call_big(void **state) {
     // BACKWARDS
 
     click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "E0FFF\"}");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "08090A0B0C0D0");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "1020304050607");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "i9\",\"hash\":\"0");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "24AWgiD2sQ18s");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "arzJAphWdkosz");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "nPqvoUATyJhMw");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, ":\"AmP4AYWHKrx");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "fRKexvq\",\"to\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "P11NWWE9Qx8yh");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "1HeVJRT4yssME");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "c36FNXB3Fq1a6");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "from\":\"AmMDEy");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "1,\"two\":2},{\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, ",3.3],{\"one\":");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "true,[11,\"22\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "ces\",123,2.5,");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "eter with spa");
+
+    click_prev();
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "\"string param");
+
+    click_prev();
     assert_string_equal(display_title, "Function");
-    assert_string_equal(display_text, "default");
+    assert_string_equal(display_text, "me");
+
+    click_prev();
+    assert_string_equal(display_title, "Function");
+    assert_string_equal(display_text, "t_function_na");
+
+    click_prev();
+    assert_string_equal(display_title, "Function");
+    assert_string_equal(display_text, "smart_contrac");
 
     click_prev();
     assert_string_equal(display_title, "Contract");
@@ -936,11 +1088,15 @@ static void test_tx_display_call_big(void **state) {
 
     click_prev();
     assert_string_equal(display_title, "Amount");
-    assert_string_equal(display_text, "2345678 AERGO");
+    assert_string_equal(display_text, "678 AERGO");
 
     click_prev();
     assert_string_equal(display_title, "Amount");
-    assert_string_equal(display_text, "0.12345678901");
+    assert_string_equal(display_text, "3456789012345");
+
+    click_prev();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "1234567890.12");
 
     click_prev();
     assert_string_equal(display_title, "Review");
@@ -949,18 +1105,18 @@ static void test_tx_display_call_big(void **state) {
     // again backwards 2 more times
 
     click_prev();
-    assert_string_equal(display_title, "Function");
-    assert_string_equal(display_text, "default");
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "E0FFF\"}");
 
     click_prev();
-    assert_string_equal(display_title, "Contract");
-    assert_string_equal(display_text, "d64mzKJ9RCAhp");
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "08090A0B0C0D0");
 
     // then forward 4 times
 
     click_next();
-    assert_string_equal(display_title, "Function");
-    assert_string_equal(display_text, "default");
+    assert_string_equal(display_title, "Parameters");
+    assert_string_equal(display_text, "E0FFF\"}");
 
     click_next();
     assert_string_equal(display_title, "Review");
