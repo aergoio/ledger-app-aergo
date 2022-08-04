@@ -194,14 +194,14 @@ static void test_tx_display_normal(void **state) {
         0x61, 0x48, 0x3f, 0x9d, 0xa7, 0x37, 0x96, 0x41,
         0x0f, 0x6b, 0xc1, 0xce, 0x58, 0x01, 0xfd, 0xf2,
         0x22, 0x09, 0x06, 0xb1, 0x4b, 0xd1, 0xe6, 0xee,
-        0xa0, 0x00, 0x00, 0x2a, 0x34, 0x00, 0x01, 0x02,
+        0xa0, 0x00, 0x00, 0x2a, 0x31, 0x00, 0x01, 0x02,
         0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a,
         0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12,
         0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a,
         0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22,
         0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a,
-        0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32,
-        0x33, 0x3a, 0x01, 0x00, 0x4a, 0x20, 0x52, 0x48,
+        0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
+        0x3a, 0x01, 0x00, 0x4a, 0x20, 0x52, 0x48,
         0x45, 0xc2, 0x4c, 0xd3, 0xe5, 0x3a, 0xec, 0xbc,
         0xda, 0x8e, 0x31, 0x5d, 0x62, 0xdc, 0x95, 0xa7,
         0xf2, 0xf8, 0x25, 0x48, 0x93, 0x0b, 0xc2, 0xfc,
@@ -262,7 +262,7 @@ static void test_tx_display_normal(void **state) {
 
     click_next();
     assert_string_equal(display_title, "Payload");
-    assert_string_equal(display_text, ",-./0123");
+    assert_string_equal(display_text, ",-./0");
 
     click_next();
     assert_string_equal(display_title, "Review");
@@ -272,7 +272,7 @@ static void test_tx_display_normal(void **state) {
 
     click_prev();
     assert_string_equal(display_title, "Payload");
-    assert_string_equal(display_text, ",-./0123");
+    assert_string_equal(display_text, ",-./0");
 
     click_prev();
     assert_string_equal(display_title, "Payload");
@@ -342,26 +342,40 @@ static void test_tx_display_normal_long_payload(void **state) {
         // tx type
         0x00,
         // transaction
-        0x08, 0x01, 0x12, 0x21, 0x03, 0x4f, 0xea, 0xa6,
-        0xed, 0xd6, 0xcf, 0x2a, 0x0e, 0x35, 0x5c, 0x88,
-        0xe9, 0xbe, 0x9a, 0xc6, 0x98, 0x30, 0x83, 0x88,
-        0x27, 0xbe, 0xda, 0xa3, 0x85, 0xc5, 0x81, 0x8e,
-        0xb7, 0x25, 0xcb, 0x1d, 0x87, 0x1a, 0x21, 0x02,
-        0x5d, 0x22, 0x30, 0xba, 0x75, 0x21, 0x7e, 0x60,
-        0x37, 0x99, 0xe9, 0xa3, 0xd5, 0xb9, 0x1a, 0x63,
-        0x61, 0x48, 0x3f, 0x9d, 0xa7, 0x37, 0x96, 0x41,
-        0x0f, 0x6b, 0xc1, 0xce, 0x58, 0x01, 0xfd, 0xf2,
-        0x22, 0x09, 0x06, 0xb1, 0x4b, 0xd1, 0xe6, 0xee,
-        0xa0, 0x00, 0x00, 0x2a, 0x20, 0x30, 0x31, 0x30,
-        0x32, 0x30, 0x33, 0x30, 0x34, 0x30, 0x35, 0x30,
-        0x36, 0x30, 0x37, 0x30, 0x38, 0x30, 0x39, 0x30,
-        0x41, 0x30, 0x42, 0x30, 0x43, 0x30, 0x44, 0x30,
-        0x45, 0x30, 0x46, 0x46, 0x46, 0x3a, 0x01, 0x00,
-        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
-        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
-        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
-        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
-        0x53, 0xbd,
+        0x08, 0x82, 0x20, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x21,
+        0x02, 0x5d, 0x22, 0x30, 0xba, 0x75, 0x21, 0x7e,
+        0x60, 0x37, 0x99, 0xe9, 0xa3, 0xd5, 0xb9, 0x1a,
+        0x63, 0x61, 0x48, 0x3f, 0x9d, 0xa7, 0x37, 0x96,
+        0x41, 0x0f, 0x6b, 0xc1, 0xce, 0x58, 0x01, 0xfd,
+        0xf2, 0x22, 0x01, 0x01, 0x2a, 0x9b, 0x01, 0x54,
+        0x65, 0x73, 0x74, 0x69, 0x6e, 0x67, 0x20, 0x61,
+        0x20, 0x6c, 0x6f, 0x6e, 0x67, 0x20, 0x70, 0x61,
+        0x79, 0x6c, 0x6f, 0x61, 0x64, 0x20, 0x74, 0x65,
+        0x78, 0x74, 0x20, 0x69, 0x6e, 0x20, 0x77, 0x68,
+        0x69, 0x63, 0x68, 0x20, 0x6f, 0x6e, 0x6c, 0x79,
+        0x20, 0x74, 0x68, 0x65, 0x20, 0x66, 0x69, 0x72,
+        0x73, 0x74, 0x20, 0x70, 0x61, 0x72, 0x74, 0x20,
+        0x77, 0x69, 0x6c, 0x6c, 0x20, 0x62, 0x65, 0x20,
+        0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x65,
+        0x64, 0x2c, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x61,
+        0x6c, 0x6c, 0x20, 0x74, 0x68, 0x65, 0x20, 0x72,
+        0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67,
+        0x20, 0x77, 0x69, 0x6c, 0x6c, 0x20, 0x62, 0x65,
+        0x20, 0x68, 0x69, 0x64, 0x64, 0x65, 0x6e, 0x20,
+        0x62, 0x75, 0x74, 0x20, 0x74, 0x68, 0x65, 0x20,
+        0x74, 0x78, 0x6e, 0x20, 0x68, 0x61, 0x73, 0x68,
+        0x20, 0x77, 0x69, 0x6c, 0x6c, 0x20, 0x62, 0x65,
+        0x20, 0x63, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65,
+        0x64, 0x20, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72,
+        0x6c, 0x79, 0x3a, 0x01, 0x00, 0x4a, 0x20, 0x52,
+        0x48, 0x45, 0xc2, 0x4c, 0xd3, 0xe5, 0x3a, 0xec,
+        0xbc, 0xda, 0x8e, 0x31, 0x5d, 0x62, 0xdc, 0x95,
+        0xa7, 0xf2, 0xf8, 0x25, 0x48, 0x93, 0x0b, 0xc2,
+        0xfc, 0xc9, 0x86, 0xbf, 0x74, 0x53, 0xbd,
     };
 
     int ret = setjmp(jump_buffer);
@@ -374,7 +388,11 @@ static void test_tx_display_normal_long_payload(void **state) {
 
     click_next();
     assert_string_equal(display_title, "Amount");
-    assert_string_equal(display_text, "123.456 AERGO");
+    assert_string_equal(display_text, "0.00000000000");
+
+    click_next();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "0000001 AERGO");
 
     click_next();
     assert_string_equal(display_title, "Recipient");
@@ -394,19 +412,105 @@ static void test_tx_display_normal_long_payload(void **state) {
 
     click_next();
     assert_string_equal(display_title, "Payload");
-    assert_string_equal(display_text, "0102030405060708090A0B0C0D0E0FFF");
+    assert_string_equal(display_text, "Testing a lon");
 
     click_next();
-    assert_string_equal(display_title, "..");
-    assert_string_equal(display_text, "..");
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "g payload tex");
+
+    click_next();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "t in which on");
+
+    click_next();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "ly the first ");
+
+    click_next();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "part will ...");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
 
     // BACKWARDS
 
     click_prev();
-    assert_string_equal(display_title, "..");
-    assert_string_equal(display_text, "..");
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "part will ...");
 
+    click_prev();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "ly the first ");
 
+    click_prev();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "t in which on");
+
+    click_prev();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "g payload tex");
+
+    click_prev();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "Testing a lon");
+
+    click_prev();
+    assert_string_equal(display_title, "Recipient");
+    assert_string_equal(display_text, "9Qx8yhfRKexvq");
+
+    click_prev();
+    assert_string_equal(display_title, "Recipient");
+    assert_string_equal(display_text, "4yssMEP11NWWE");
+
+    click_prev();
+    assert_string_equal(display_title, "Recipient");
+    assert_string_equal(display_text, "3Fq1a61HeVJRT");
+
+    click_prev();
+    assert_string_equal(display_title, "Recipient");
+    assert_string_equal(display_text, "AmMDEyc36FNXB");
+
+    click_prev();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "0000001 AERGO");
+
+    click_prev();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "0.00000000000");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS AGAIN
+
+    click_prev();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "part will ...");
+
+    click_prev();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "ly the first ");
+
+    // FORWARD
+
+    click_next();
+    assert_string_equal(display_title, "Payload");
+    assert_string_equal(display_text, "part will ...");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "0.00000000000");
+
+    click_next();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "0000001 AERGO");
 }
 
 // TRANSFER
@@ -1482,7 +1586,9 @@ static void test_tx_display_deploy_1(void **state) {
     assert_string_equal(display_text, "1C1837A12CAD");
 }
 
-// DEPLOY
+// test also: deploy with parameters to constructor
+
+// DEPLOY WITH AMOUNT
 static void test_tx_display_deploy_2(void **state) {
     (void) state;
 
@@ -1491,20 +1597,20 @@ static void test_tx_display_deploy_2(void **state) {
         // tx type
         0x06,
         // transaction
-        0x08, 0x81, 0x08, 0x12, 0x21, 0x03, 0x8c, 0xb9,
-        0x2c, 0xde, 0xbf, 0x39, 0x98, 0x69, 0x09, 0x3c,
-        0xac, 0x47, 0xe3, 0x70, 0xd8, 0xa9, 0xfa, 0x50,
-        0x17, 0x30, 0x42, 0x23, 0xf9, 0xad, 0x1a, 0x8c,
-        0x0a, 0x05, 0xa9, 0x06, 0xa9, 0xcb, 0x22, 0x01,
-        0x00, 0x2a, 0x40, 0x30, 0x31, 0x30, 0x32, 0x30,
-        0x33, 0x30, 0x34, 0x30, 0x35, 0x30, 0x36, 0x30,
-        0x37, 0x30, 0x38, 0x30, 0x39, 0x30, 0x41, 0x30,
-        0x42, 0x30, 0x43, 0x30, 0x44, 0x30, 0x45, 0x30,
-        0x46, 0x46, 0x46, 0x30, 0x31, 0x30, 0x32, 0x30,
-        0x33, 0x30, 0x34, 0x30, 0x35, 0x30, 0x36, 0x30,
-        0x37, 0x30, 0x38, 0x30, 0x39, 0x30, 0x41, 0x30,
-        0x42, 0x30, 0x43, 0x30, 0x44, 0x30, 0x45, 0x30,
-        0x46, 0x46, 0x46, 0x3a, 0x01, 0x00, 0x40, 0x06,
+        0x08, 0x7f, 0x12, 0x21, 0x02, 0x9d, 0x02, 0x05,
+        0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53, 0x68,
+        0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac, 0x98,
+        0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c, 0x06,
+        0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x22, 0x0e, 0x3c,
+        0xde, 0x6f, 0xff, 0x97, 0x32, 0xd5, 0x45, 0xd5,
+        0x8f, 0xd9, 0x30, 0xf3, 0x4e, 0x2a, 0x34, 0x00,
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+        0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
+        0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
+        0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20,
+        0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
+        0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0x30,
+        0x31, 0x32, 0x33, 0x3a, 0x01, 0x00, 0x40, 0x06,
         0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
         0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
         0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
@@ -1520,36 +1626,45 @@ static void test_tx_display_deploy_2(void **state) {
     assert_string_equal(display_title, "Review");
     assert_string_equal(display_text, "Transaction");
 
-// test also: deploy with amount
-// test also: deploy with parameters to constructor
+    click_next();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "1234567890123");
 
     click_next();
     assert_string_equal(display_title, "Amount");
-    assert_string_equal(display_text, "1.5 AERGO");
+    assert_string_equal(display_text, "456.123456789");
+
+    click_next();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "012345678 AER");
+
+    click_next();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "GO");
 
     click_next();
     assert_string_equal(display_title, "New Contract 1/6");
-    assert_string_equal(display_text, "EF6F33393A9F");
+    assert_string_equal(display_text, "C4C6540A15FC");
 
     click_next();
     assert_string_equal(display_title, "New Contract 2/6");
-    assert_string_equal(display_text, "1C1837A12CAD");
+    assert_string_equal(display_text, "140A784056FE");
 
     click_next();
     assert_string_equal(display_title, "New Contract 3/6");
-    assert_string_equal(display_text, "803E9F4BBA89");
+    assert_string_equal(display_text, "6D9E13566FB6");
 
     click_next();
     assert_string_equal(display_title, "New Contract 4/6");
-    assert_string_equal(display_text, "5B1E78F24C1D");
+    assert_string_equal(display_text, "14ECB2D9AC03");
 
     click_next();
     assert_string_equal(display_title, "New Contract 5/6");
-    assert_string_equal(display_text, "BDCF6B5C7CA3");
+    assert_string_equal(display_text, "31E264C38644");
 
     click_next();
     assert_string_equal(display_title, "New Contract 6/6");
-    assert_string_equal(display_text, "AD41");
+    assert_string_equal(display_text, "2ACD");
 
     click_next();
     assert_string_equal(display_title, "Review");
@@ -1559,31 +1674,43 @@ static void test_tx_display_deploy_2(void **state) {
 
     click_prev();
     assert_string_equal(display_title, "New Contract 6/6");
-    assert_string_equal(display_text, "AD41");
+    assert_string_equal(display_text, "2ACD");
 
     click_prev();
     assert_string_equal(display_title, "New Contract 5/6");
-    assert_string_equal(display_text, "BDCF6B5C7CA3");
+    assert_string_equal(display_text, "31E264C38644");
 
     click_prev();
     assert_string_equal(display_title, "New Contract 4/6");
-    assert_string_equal(display_text, "5B1E78F24C1D");
+    assert_string_equal(display_text, "14ECB2D9AC03");
 
     click_prev();
     assert_string_equal(display_title, "New Contract 3/6");
-    assert_string_equal(display_text, "803E9F4BBA89");
+    assert_string_equal(display_text, "6D9E13566FB6");
 
     click_prev();
     assert_string_equal(display_title, "New Contract 2/6");
-    assert_string_equal(display_text, "1C1837A12CAD");
+    assert_string_equal(display_text, "140A784056FE");
 
     click_prev();
     assert_string_equal(display_title, "New Contract 1/6");
-    assert_string_equal(display_text, "EF6F33393A9F");
+    assert_string_equal(display_text, "C4C6540A15FC");
 
     click_prev();
     assert_string_equal(display_title, "Amount");
-    assert_string_equal(display_text, "1.5 AERGO");
+    assert_string_equal(display_text, "GO");
+
+    click_prev();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "012345678 AER");
+
+    click_prev();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "456.123456789");
+
+    click_prev();
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "1234567890123");
 
     click_prev();
     assert_string_equal(display_title, "Review");
@@ -1593,17 +1720,17 @@ static void test_tx_display_deploy_2(void **state) {
 
     click_prev();
     assert_string_equal(display_title, "New Contract 6/6");
-    assert_string_equal(display_text, "AD41");
+    assert_string_equal(display_text, "2ACD");
 
     click_prev();
     assert_string_equal(display_title, "New Contract 5/6");
-    assert_string_equal(display_text, "BDCF6B5C7CA3");
+    assert_string_equal(display_text, "31E264C38644");
 
     // then forward 4 times
 
     click_next();
     assert_string_equal(display_title, "New Contract 6/6");
-    assert_string_equal(display_text, "AD41");
+    assert_string_equal(display_text, "2ACD");
 
     click_next();
     assert_string_equal(display_title, "Review");
@@ -1611,11 +1738,11 @@ static void test_tx_display_deploy_2(void **state) {
 
     click_next();
     assert_string_equal(display_title, "Amount");
-    assert_string_equal(display_text, "1.5 AERGO");
+    assert_string_equal(display_text, "1234567890123");
 
     click_next();
-    assert_string_equal(display_title, "New Contract 1/6");
-    assert_string_equal(display_text, "EF6F33393A9F");
+    assert_string_equal(display_title, "Amount");
+    assert_string_equal(display_text, "456.123456789");
 }
 
 // GOVERNANCE
