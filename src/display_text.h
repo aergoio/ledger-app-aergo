@@ -36,7 +36,7 @@ static void reset_text_parser() {
 }
 
 static bool is_json_literal(unsigned char c) {
-  return (strchr("truefalsn0123456789.", c) > 0);
+  return (strchr("truefalsn0123456789.", c) != NULL);
 }
 
 /*

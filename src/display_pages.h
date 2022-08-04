@@ -23,6 +23,7 @@ static int current_screen;
 
 static int current_page;
 static int page_to_display;
+static int max_pages;
 
 void (*display_page_callback)(bool);
 
@@ -293,6 +294,11 @@ static bool on_last_screen() {
 }
 
 static bool on_last_page() {
+  // is there a maximum number of pages to display?
+  // have we already displayed the maximum number of pages?
+  if (max_pages > 0 && current_page - num_screens >= max_pages) {
+    return txn_is_complete;
+  }
   // 1. on last screen
   // 2. no more input to parse
   // 3. no more output to display
@@ -305,6 +311,14 @@ static bool on_last_page() {
 // update pointer to unparsed text - or move memory, removing old/parsed input text
 static bool parse_next_page() {
   unsigned int len;
+
+  // have we already displayed the maximum number of pages?
+  if (max_pages > 0 && current_page - num_screens >= max_pages) {
+    if (!txn_is_complete) {
+      request_next_part();
+      return false;
+    }
+  }
 
   // if the parsed text is shorter than the max size to display
   if (parsed_size < MAX_CHARS_PER_LINE) {
@@ -350,6 +364,16 @@ static bool parse_next_page() {
 
   // update the page number
   current_page++;
+
+  // will we discard the next pages?
+  if (max_pages > 0 && current_page - num_screens >= max_pages) {
+    // add ... at the end
+    if (len > 5) {
+      global_text[--len] = '.';
+      global_text[--len] = '.';
+      global_text[--len] = '.';
+    }
+  }
 
   return true;
 }

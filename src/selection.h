@@ -29,6 +29,7 @@ static void display_transaction() {
   unsigned int size;
 
   clear_screens();
+  max_pages = 0;
 
   if (strcmp(amount_str,"0 AERGO") != 0) {
     add_screens("Amount", amount_str, strlen(amount_str), false);
@@ -46,8 +47,8 @@ static void display_transaction() {
     add_screens("Recipient", recipient_address, strlen(recipient_address), false);
     if (txn.payload) {
       add_screens("Payload", txn.payload, txn.payload_part_len, true);
-      /* display the payload in hex format because it can be just binary data */
-      screens[num_screens-1].in_hex = true;
+      /* if the payload is long, display only the first pages */
+      if (txn.payload_len >= 50) max_pages = 4;
     }
 
     break;
@@ -226,8 +227,8 @@ static void display_transaction() {
     }
     if (txn.payload) {
       add_screens("Payload", txn.payload, txn.payload_part_len, true);
-      /* display the payload in hex format because it can be just binary data */
-      screens[num_screens-1].in_hex = true;
+      /* if the payload is long, display only the first pages */
+      if (txn.payload_len >= 50) max_pages = 4;
     }
 
     if (num_screens == 0) {
