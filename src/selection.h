@@ -1,6 +1,6 @@
 
 static void display_payload_hash() {
-  int i;
+  int i, start_screen = num_screens;
 
   /* calculate the payload hash */
   sha256_finish(hash2, payload_hash);
@@ -13,7 +13,7 @@ static void display_payload_hash() {
   add_screens("New Contract 6/6", (char*)payload_hash + 30, 2, false);
 
   /* display the payload hash in hex format */
-  for (i=0; i<num_screens; i++) {
+  for (i=start_screen; i<num_screens; i++) {
     screens[i].in_hex = true;
   }
 
