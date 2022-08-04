@@ -94,7 +94,11 @@ static bool parse_page_text() {  // in_hex as argument?
       if (display_char && !showing_function) {
         unsigned int payload_pos, payload_part_offset, payload_len;
         get_payload_info(&payload_part_offset, &payload_len);
-        payload_pos = 8 + payload_part_offset + input_pos;
+        if (payload_part_offset == 0) {
+          payload_pos = 9 + input_pos - 1;
+        } else {
+          payload_pos = payload_part_offset + input_pos - 1;
+        }
         // discard last }] bytes
         if (payload_pos == payload_len - 2) {
           input_pos += 2;
