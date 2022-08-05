@@ -31,7 +31,7 @@ static void display_transaction() {
   clear_screens();
   max_pages = 0;
 
-  if (strcmp(amount_str,"0 AERGO") != 0) {
+  if (strcmp(amount_str,"0 AERGO") != 0 && !txn.is_system) {
     add_screens("Amount", amount_str, strlen(amount_str), false);
   }
 
@@ -118,6 +118,9 @@ static void display_transaction() {
 
         if (!args) goto loc_invalid;
 
+        if (strcmp(amount_str,"0 AERGO") != 0) {
+          add_screens("Amount", amount_str, strlen(amount_str), false);
+        }
         add_screens("BP Vote", args, size, true);
 
       // {"Name":"v1voteDAO","Args":[<DAO ID>,<candidate>]}
@@ -125,6 +128,9 @@ static void display_transaction() {
 
         if (!args) goto loc_invalid;
 
+        if (strcmp(amount_str,"0 AERGO") != 0) {
+          add_screens("Amount", amount_str, strlen(amount_str), false);
+        }
         add_screens("DAO Vote", args, size, true);
 
       } else {
