@@ -1883,6 +1883,422 @@ static void test_tx_display_multicall_2(void **state) {
     assert_string_equal(display_text, "token1");
 }
 
+// MULTICALL
+static void test_tx_display_multicall_3(void **state) {
+    (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x07,
+        // transaction
+        0x08, 0xfa, 0x01, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x22, 0x01,
+        0x00, 0x2a, 0xa5, 0x02, 0x5b, 0x5b, 0x22, 0x6c,
+        0x65, 0x74, 0x22, 0x2c, 0x22, 0x76, 0x31, 0x22,
+        0x2c, 0x32, 0x35, 0x30, 0x5d, 0x2c, 0x5b, 0x22,
+        0x6c, 0x65, 0x74, 0x22, 0x2c, 0x22, 0x76, 0x32,
+        0x22, 0x2c, 0x2d, 0x31, 0x32, 0x2e, 0x33, 0x34,
+        0x35, 0x5d, 0x2c, 0x5b, 0x22, 0x6c, 0x65, 0x74,
+        0x22, 0x2c, 0x22, 0x76, 0x33, 0x22, 0x2c, 0x74,
+        0x72, 0x75, 0x65, 0x5d, 0x2c, 0x5b, 0x22, 0x6c,
+        0x65, 0x74, 0x22, 0x2c, 0x22, 0x76, 0x34, 0x22,
+        0x2c, 0x66, 0x61, 0x6c, 0x73, 0x65, 0x5d, 0x2c,
+        0x5b, 0x22, 0x6c, 0x65, 0x74, 0x22, 0x2c, 0x22,
+        0x76, 0x35, 0x22, 0x2c, 0x6e, 0x75, 0x6c, 0x6c,
+        0x5d, 0x2c, 0x5b, 0x22, 0x6c, 0x65, 0x74, 0x22,
+        0x2c, 0x22, 0x6c, 0x69, 0x73, 0x74, 0x22, 0x2c,
+        0x5b, 0x32, 0x35, 0x30, 0x2c, 0x31, 0x32, 0x2e,
+        0x33, 0x34, 0x35, 0x2c, 0x74, 0x72, 0x75, 0x65,
+        0x5d, 0x5d, 0x2c, 0x5b, 0x22, 0x6c, 0x65, 0x74,
+        0x22, 0x2c, 0x22, 0x6f, 0x62, 0x6a, 0x22, 0x2c,
+        0x7b, 0x22, 0x69, 0x6e, 0x74, 0x22, 0x3a, 0x32,
+        0x35, 0x30, 0x2c, 0x22, 0x66, 0x6c, 0x6f, 0x61,
+        0x74, 0x22, 0x3a, 0x2d, 0x31, 0x32, 0x33, 0x34,
+        0x35, 0x30, 0x30, 0x30, 0x2c, 0x22, 0x62, 0x6f,
+        0x6f, 0x6c, 0x22, 0x3a, 0x74, 0x72, 0x75, 0x65,
+        0x7d, 0x5d, 0x2c, 0x5b, 0x22, 0x63, 0x61, 0x6c,
+        0x6c, 0x22, 0x2c, 0x22, 0x25, 0x63, 0x25, 0x22,
+        0x2c, 0x22, 0x74, 0x65, 0x73, 0x74, 0x22, 0x2c,
+        0x32, 0x35, 0x30, 0x2c, 0x31, 0x32, 0x2e, 0x33,
+        0x34, 0x35, 0x2c, 0x2d, 0x32, 0x35, 0x30, 0x65,
+        0x31, 0x30, 0x2c, 0x31, 0x32, 0x2e, 0x33, 0x34,
+        0x35, 0x45, 0x2b, 0x35, 0x2c, 0x74, 0x72, 0x75,
+        0x65, 0x2c, 0x66, 0x61, 0x6c, 0x73, 0x65, 0x2c,
+        0x6e, 0x75, 0x6c, 0x6c, 0x5d, 0x2c, 0x5b, 0x22,
+        0x61, 0x73, 0x73, 0x65, 0x72, 0x74, 0x22, 0x2c,
+        0x2d, 0x31, 0x30, 0x30, 0x2e, 0x37, 0x35, 0x65,
+        0x2b, 0x39, 0x2c, 0x22, 0x3e, 0x3d, 0x22, 0x2c,
+        0x22, 0x25, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x72,
+        0x65, 0x73, 0x75, 0x6c, 0x74, 0x25, 0x22, 0x5d,
+        0x5d, 0x3a, 0x01, 0x00, 0x40, 0x07, 0x4a, 0x20,
+        0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3, 0xe5, 0x3a,
+        0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d, 0x62, 0xdc,
+        0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48, 0x93, 0x0b,
+        0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74, 0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v1");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "250");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v2");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "-12.345");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v3");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "true");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v4");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "false");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v5");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "null");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "list");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "[250,12.345,t");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "rue]");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "obj");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "{\"int\":250,\"f");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "loat\":-123450");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "00,\"bool\":tru");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "e}");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> call");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "%c%");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "test");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "250");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "12.345");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "-250e10");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "12.345E+5");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "true");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "false");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "null");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> assert");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "-100.75e+9");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, ">=");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "%last_result%");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "%last_result%");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, ">=");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "-100.75e+9");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> assert");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "null");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "false");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "true");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "12.345E+5");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "-250e10");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "12.345");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "250");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "test");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "%c%");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> call");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "e}");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "00,\"bool\":tru");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "loat\":-123450");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "{\"int\":250,\"f");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "obj");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "rue]");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "[250,12.345,t");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "list");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "null");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v5");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "false");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v4");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "true");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v3");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "-12.345");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v2");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "250");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v1");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "%last_result%");
+
+    click_prev();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, ">=");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "%last_result%");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "=> let");
+
+    click_next();
+    assert_string_equal(display_title, "MultiCall");
+    assert_string_equal(display_text, "v1");
+}
+
 // DEPLOY
 static void test_tx_display_deploy_1(void **state) {
     (void) state;
@@ -2510,6 +2926,7 @@ int main() {
       cmocka_unit_test(test_tx_display_call_big),
       cmocka_unit_test(test_tx_display_multicall_1),
       cmocka_unit_test(test_tx_display_multicall_2),
+      cmocka_unit_test(test_tx_display_multicall_3),
       cmocka_unit_test(test_tx_display_deploy_1),
       cmocka_unit_test(test_tx_display_deploy_2),
       cmocka_unit_test(test_tx_display_governance),
