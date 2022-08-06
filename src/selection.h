@@ -26,7 +26,7 @@ static void display_payload_hash() {
 static void display_transaction() {
   unsigned int pos = 0;
   char *function_name, *args;
-  unsigned int size;
+  unsigned int name_len, size;
 
   clear_screens();
   max_pages = 0;
@@ -68,6 +68,7 @@ static void display_transaction() {
       if (parse_payload_function(&function_name, &size) == false) goto loc_invalid;
       add_screens("Function", function_name, size, true);
       screens[num_screens-1].is_call = true;
+      screens[num_screens-1].trim_payload = true;
       //add_screens("Parameters", args, size, true);
     } else {
       function_name = "default";
@@ -97,24 +98,24 @@ static void display_transaction() {
     pos = 4;
 
     /* parse the payload */
-    if (parse_payload(&function_name, &args, &size) == false) goto loc_invalid;
+    if (parse_payload(&function_name, &name_len, &args, &size) == false) goto loc_invalid;
 
     if (txn.is_system) {
 
       pos = 5;
 
       // {"Name":"v1stake"}
-      if (strcmp(function_name,"v1stake") == 0) {
+      if (strncmp(function_name,"v1stake",name_len) == 0) {
 
         add_screens("Stake", amount_str, strlen(amount_str), true);
 
       // {"Name":"v1unstake"}
-      } else if (strcmp(function_name,"v1unstake") == 0) {
+      } else if (strncmp(function_name,"v1unstake",name_len) == 0) {
 
         add_screens("Unstake", amount_str, strlen(amount_str), true);
 
       // {"Name":"v1voteBP","Args":[<peer IDs>]}
-      } else if (strcmp(function_name,"v1voteBP") == 0) {
+      } else if (strncmp(function_name,"v1voteBP",name_len) == 0) {
 
         if (!args) goto loc_invalid;
 
@@ -122,9 +123,10 @@ static void display_transaction() {
           add_screens("Amount", amount_str, strlen(amount_str), false);
         }
         add_screens("BP Vote", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       // {"Name":"v1voteDAO","Args":[<DAO ID>,<candidate>]}
-      } else if (strcmp(function_name,"v1voteDAO") == 0) {
+      } else if (strncmp(function_name,"v1voteDAO",name_len) == 0) {
 
         if (!args) goto loc_invalid;
 
@@ -132,6 +134,7 @@ static void display_transaction() {
           add_screens("Amount", amount_str, strlen(amount_str), false);
         }
         add_screens("DAO Vote", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       } else {
         pos = 6;
@@ -145,14 +148,16 @@ static void display_transaction() {
       if (!args) goto loc_invalid;
 
       // {"Name":"v1createName","Args":[<a name string>]}
-      if (strcmp(function_name,"v1createName") == 0) {
+      if (strncmp(function_name,"v1createName",name_len) == 0) {
 
         add_screens("Create Name", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       // {"Name":"v1updateName","Args":[<a name string>, <new owner address>]}
-      } else if (strcmp(function_name,"v1updateName") == 0) {
+      } else if (strncmp(function_name,"v1updateName",name_len) == 0) {
 
         add_screens("Update Name", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       } else {
         pos = 8;
@@ -166,34 +171,40 @@ static void display_transaction() {
       if (!args) goto loc_invalid;
 
       // {"Name":"appendAdmin","Args":[<new admin address>]}
-      if (strcmp(function_name,"appendAdmin") == 0) {
+      if (strncmp(function_name,"appendAdmin",name_len) == 0) {
 
         add_screens("Add Admin", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       // {"Name":"removeAdmin","Args":[<admin address>]}
-      } else if (strcmp(function_name,"removeAdmin") == 0) {
+      } else if (strncmp(function_name,"removeAdmin",name_len) == 0) {
 
         add_screens("Remove Admin", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       // {"Name":"appendConf","Args":[<config key>,<config value>]}
-      } else if (strcmp(function_name,"appendConf") == 0) {
+      } else if (strncmp(function_name,"appendConf",name_len) == 0) {
 
         add_screens("Add Config", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       // {"Name":"removeConf","Args":[<config key>,<config value>]}
-      } else if (strcmp(function_name,"removeConf") == 0) {
+      } else if (strncmp(function_name,"removeConf",name_len) == 0) {
 
         add_screens("Remove Config", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       // {"Name":"enableConf","Args":[<config key>,<true|false>]}
-      } else if (strcmp(function_name,"enableConf") == 0) {
+      } else if (strncmp(function_name,"enableConf",name_len) == 0) {
 
         add_screens("Enable Config", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       // {"Name":"changeCluster","Args":[{"command":"add","name":"[node name]","address":"[peer address]","peerid":"[peer id]"}]}
-      } else if (strcmp(function_name,"changeCluster") == 0) {
+      } else if (strncmp(function_name,"changeCluster",name_len) == 0) {
 
         add_screens("Change Cluster", args, size, true);
+        screens[num_screens-1].trim_payload = true;
 
       } else {
         pos = 10;

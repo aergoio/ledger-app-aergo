@@ -15,7 +15,8 @@ static bool is_in_array;
 static int  obj_level;
 static bool in_hex;
 
-void get_payload_info(unsigned int *ppayload_part_offset, unsigned int *ppayload_len);
+void get_payload_info(unsigned char **ppayload, unsigned int *ppayload_len,
+                      unsigned int *ppayload_part_offset);
 
 static void reset_text_parser() {
 
@@ -91,20 +92,26 @@ static bool parse_page_text() {  // in_hex as argument?
         }
         continue;
       }
-      if (display_char && !showing_function) {
-        unsigned int payload_pos, payload_part_offset, payload_len;
-        get_payload_info(&payload_part_offset, &payload_len);
-        if (payload_part_offset == 0) {
+    }
+
+    if (screens[current_screen-1].trim_payload) {
+      unsigned int payload_pos, payload_part_offset, payload_len;
+      unsigned char *payload;
+      get_payload_info(&payload, &payload_len, &payload_part_offset);
+      if (payload_part_offset == 0) {
+        if (screens[current_screen-1].is_call) {
           payload_pos = 9 + input_pos - 1;
         } else {
-          payload_pos = payload_part_offset + input_pos - 1;
+          payload_pos = input_text + input_pos - payload - 1;
         }
-        // discard last }] bytes
-        if (payload_pos == payload_len - 2) {
-          input_pos += 2;
-          zIn += 2;
-          return (zIn >= zEnd);  // parsed_all_input
-        }
+      } else {
+        payload_pos = payload_part_offset + input_pos - 1;
+      }
+      // discard last }] bytes
+      if (payload_pos == payload_len - 2) {
+        input_pos += 2;
+        zIn += 2;
+        return (zIn >= zEnd);  // parsed_all_input
       }
     }
 

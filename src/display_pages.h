@@ -14,6 +14,7 @@ struct items {
   bool in_hex;
   bool is_call;
   bool is_multicall;
+  bool trim_payload;
 };
 
 static struct items screens[10];

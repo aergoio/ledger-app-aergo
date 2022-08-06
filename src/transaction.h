@@ -408,9 +408,10 @@ loc_invalid:
 **  {"Name":"some_function","Args":[
 **  {"Name":"some_function"}
 */
-static bool parse_payload(char **pfunction_name, char **pargs, unsigned int *pargs_len) {
+static bool parse_payload(char **pfunction_name, unsigned int *pname_len,
+                          char **pargs,          unsigned int *pargs_len) {
   char *name, *args, *end, *ptr;
-  unsigned int len, args_len = 0;
+  unsigned int len, name_len, args_len;
 
   if (!txn.payload || txn.payload_len==0) goto loc_invalid;
 
@@ -428,27 +429,19 @@ static bool parse_payload(char **pfunction_name, char **pargs, unsigned int *par
     //name_len++;
   }
   if (ptr == end || *ptr != '"') goto loc_invalid;
-  *ptr = 0;  /* null terminator used by strcmp */
+  name_len = ptr - name;
 
   ptr++;
   if (strncmp(ptr, ",\"Args\":[", 9) == 0) {
     args = ptr + 9;
-  } else {
-    args = NULL;
-  }
-
-  if (has_partial_payload) {
     args_len = txn.payload + len - args;
   } else {
-    if (args) {
-      if (txn.payload[txn.payload_len-1] != '}') goto loc_invalid;
-      if (txn.payload[txn.payload_len-2] != ']') goto loc_invalid;
-      txn.payload[txn.payload_len-2] = 0;
-      args_len = strlen(args);
-    }
+    args = NULL;
+    args_len = 0;
   }
 
   *pfunction_name = name;
+  *pname_len = name_len;
   *pargs = args;
   *pargs_len = args_len;
 
@@ -479,7 +472,9 @@ loc_invalid:
   return false;
 }
 
-void get_payload_info(unsigned int *ppayload_part_offset, unsigned int *ppayload_len) {
+void get_payload_info(unsigned char **ppayload, unsigned int *ppayload_len,
+                      unsigned int *ppayload_part_offset) {
+  *ppayload = (unsigned char *) txn.payload;
   *ppayload_part_offset = txn.payload_part_offset;
   *ppayload_len = txn.payload_len;
 }
