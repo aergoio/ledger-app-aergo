@@ -211,7 +211,8 @@ static void generate_test_case() {
     printf("\n");
   } while (strcmp(display_title,"Review")!=0);
 
-  printf("    // BACKWARDS\n");
+  puts("    // BACKWARDS");
+  puts("");
 
   do {
     click_prev();
@@ -2584,7 +2585,7 @@ static void test_tx_display_deploy_2(void **state) {
 }
 
 // GOVERNANCE
-static void test_tx_display_governance(void **state) {
+static void test_tx_display_governance_add_admin(void **state) {
     (void) state;
 
     // clang-format off
@@ -2703,6 +2704,1260 @@ static void test_tx_display_governance(void **state) {
     click_next();
     assert_string_equal(display_title, "Add Admin");
     assert_string_equal(display_text, "B3Fq1a61HeVJR");
+}
+
+static void test_tx_display_governance_remove_admin(void **state) {
+    (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x10,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x65, 0x6e,
+        0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65,
+        0x22, 0x01, 0x00, 0x2a, 0x56, 0x7b, 0x22, 0x4e,
+        0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22, 0x72, 0x65,
+        0x6d, 0x6f, 0x76, 0x65, 0x41, 0x64, 0x6d, 0x69,
+        0x6e, 0x22, 0x2c, 0x22, 0x41, 0x72, 0x67, 0x73,
+        0x22, 0x3a, 0x5b, 0x22, 0x41, 0x6d, 0x4d, 0x44,
+        0x45, 0x79, 0x63, 0x33, 0x36, 0x46, 0x4e, 0x58,
+        0x42, 0x33, 0x46, 0x71, 0x31, 0x61, 0x36, 0x31,
+        0x48, 0x65, 0x56, 0x4a, 0x52, 0x54, 0x34, 0x79,
+        0x73, 0x73, 0x4d, 0x45, 0x50, 0x31, 0x31, 0x4e,
+        0x57, 0x57, 0x45, 0x39, 0x51, 0x78, 0x38, 0x79,
+        0x68, 0x66, 0x52, 0x4b, 0x65, 0x78, 0x76, 0x71,
+        0x22, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "q\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Admin");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+}
+
+static void test_tx_display_governance_stake (void **state) {
+    (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x82, 0x20, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x0c,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x73, 0x79,
+        0x73, 0x74, 0x65, 0x6d, 0x22, 0x09, 0x06, 0xb1,
+        0x4b, 0xd1, 0xe6, 0xee, 0xa0, 0x00, 0x00, 0x2a,
+        0x12, 0x7b, 0x22, 0x4e, 0x61, 0x6d, 0x65, 0x22,
+        0x3a, 0x22, 0x76, 0x31, 0x73, 0x74, 0x61, 0x6b,
+        0x65, 0x22, 0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Stake");
+    assert_string_equal(display_text, "123.456 AERGO");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Stake");
+    assert_string_equal(display_text, "123.456 AERGO");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards
+
+    click_prev();
+    assert_string_equal(display_title, "Stake");
+    assert_string_equal(display_text, "123.456 AERGO");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // then forward
+
+    click_next();
+    assert_string_equal(display_title, "Stake");
+    assert_string_equal(display_text, "123.456 AERGO");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+}
+
+static void test_tx_display_governance_unstake (void **state) {
+    (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x82, 0x20, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x0c,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x73, 0x79,
+        0x73, 0x74, 0x65, 0x6d, 0x22, 0x0a, 0x1a, 0x24,
+        0x91, 0xe2, 0x89, 0x5f, 0xc7, 0x30, 0xf3, 0x4e,
+        0x2a, 0x14, 0x7b, 0x22, 0x4e, 0x61, 0x6d, 0x65,
+        0x22, 0x3a, 0x22, 0x76, 0x31, 0x75, 0x6e, 0x73,
+        0x74, 0x61, 0x6b, 0x65, 0x22, 0x7d, 0x3a, 0x01,
+        0x00, 0x40, 0x01, 0x4a, 0x20, 0x52, 0x48, 0x45,
+        0xc2, 0x4c, 0xd3, 0xe5, 0x3a, 0xec, 0xbc, 0xda,
+        0x8e, 0x31, 0x5d, 0x62, 0xdc, 0x95, 0xa7, 0xf2,
+        0xf8, 0x25, 0x48, 0x93, 0x0b, 0xc2, 0xfc, 0xc9,
+        0x86, 0xbf, 0x74, 0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    // generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "123456.123456");
+
+    click_next();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "789012345678 ");
+
+    click_next();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "AERGO");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "AERGO");
+
+    click_prev();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "789012345678 ");
+
+    click_prev();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "123456.123456");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "AERGO");
+
+    click_prev();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "789012345678 ");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "AERGO");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "123456.123456");
+
+    click_next();
+    assert_string_equal(display_title, "Unstake");
+    assert_string_equal(display_text, "789012345678 ");
+
+}
+
+static void
+test_tx_display_governance_bp_vote (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x0c,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x73, 0x79,
+        0x73, 0x74, 0x65, 0x6d, 0x22, 0x01, 0x00, 0x2a,
+        0x8a, 0x01, 0x7b, 0x22, 0x4e, 0x61, 0x6d, 0x65,
+        0x22, 0x3a, 0x22, 0x76, 0x31, 0x76, 0x6f, 0x74,
+        0x65, 0x42, 0x50, 0x22, 0x2c, 0x22, 0x41, 0x72,
+        0x67, 0x73, 0x22, 0x3a, 0x5b, 0x22, 0x41, 0x6d,
+        0x4d, 0x44, 0x45, 0x79, 0x63, 0x33, 0x36, 0x46,
+        0x4e, 0x58, 0x42, 0x33, 0x46, 0x71, 0x31, 0x61,
+        0x36, 0x31, 0x48, 0x65, 0x56, 0x4a, 0x52, 0x54,
+        0x34, 0x79, 0x73, 0x73, 0x4d, 0x45, 0x50, 0x31,
+        0x31, 0x4e, 0x57, 0x57, 0x45, 0x39, 0x51, 0x78,
+        0x38, 0x79, 0x68, 0x66, 0x52, 0x4b, 0x65, 0x78,
+        0x76, 0x71, 0x22, 0x2c, 0x22, 0x41, 0x6d, 0x4d,
+        0x68, 0x4e, 0x5a, 0x56, 0x68, 0x69, 0x72, 0x64,
+        0x56, 0x72, 0x67, 0x4c, 0x31, 0x31, 0x6b, 0x6f,
+        0x55, 0x68, 0x31, 0x6a, 0x36, 0x54, 0x50, 0x6e,
+        0x48, 0x31, 0x31, 0x38, 0x4b, 0x71, 0x78, 0x64,
+        0x69, 0x68, 0x46, 0x44, 0x39, 0x59, 0x58, 0x48,
+        0x44, 0x36, 0x33, 0x56, 0x70, 0x79, 0x46, 0x47,
+        0x75, 0x22, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40,
+        0x01, 0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c,
+        0xd3, 0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31,
+        0x5d, 0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25,
+        0x48, 0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf,
+        0x74, 0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    // generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "q\",\"AmMhNZVhi");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "rdVrgL11koUh1");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "j6TPnH118Kqxd");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "ihFD9YXHD63Vp");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "yFGu\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "yFGu\"");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "ihFD9YXHD63Vp");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "j6TPnH118Kqxd");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "rdVrgL11koUh1");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "q\",\"AmMhNZVhi");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "yFGu\"");
+
+    click_prev();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "ihFD9YXHD63Vp");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "yFGu\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_next();
+    assert_string_equal(display_title, "BP Vote");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+}
+
+static void
+test_tx_display_governance_dao_vote (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x0c,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x73, 0x79,
+        0x73, 0x74, 0x65, 0x6d, 0x22, 0x01, 0x00, 0x2a,
+        0x40, 0x7b, 0x22, 0x4e, 0x61, 0x6d, 0x65, 0x22,
+        0x3a, 0x22, 0x76, 0x31, 0x76, 0x6f, 0x74, 0x65,
+        0x44, 0x41, 0x4f, 0x22, 0x2c, 0x22, 0x41, 0x72,
+        0x67, 0x73, 0x22, 0x3a, 0x5b, 0x22, 0x6e, 0x61,
+        0x6d, 0x65, 0x70, 0x72, 0x69, 0x63, 0x65, 0x22,
+        0x2c, 0x22, 0x32, 0x30, 0x30, 0x30, 0x30, 0x30,
+        0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30,
+        0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x22, 0x5d,
+        0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01, 0x4a, 0x20,
+        0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3, 0xe5, 0x3a,
+        0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d, 0x62, 0xdc,
+        0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48, 0x93, 0x0b,
+        0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74, 0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    // generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "\"nameprice\",\"");
+
+    click_next();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "2000000000000");
+
+    click_next();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "0000000\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "0000000\"");
+
+    click_prev();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "2000000000000");
+
+    click_prev();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "\"nameprice\",\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "0000000\"");
+
+    click_prev();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "2000000000000");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "0000000\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "\"nameprice\",\"");
+
+    click_next();
+    assert_string_equal(display_title, "DAO Vote");
+    assert_string_equal(display_text, "2000000000000");
+
+}
+
+static void
+test_tx_display_governance_create_name (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x0a,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x6e, 0x61,
+        0x6d, 0x65, 0x22, 0x01, 0x00, 0x2a, 0x2d, 0x7b,
+        0x22, 0x4e, 0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22,
+        0x76, 0x31, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
+        0x4e, 0x61, 0x6d, 0x65, 0x22, 0x2c, 0x22, 0x41,
+        0x72, 0x67, 0x73, 0x22, 0x3a, 0x5b, 0x22, 0x63,
+        0x72, 0x79, 0x70, 0x74, 0x6f, 0x62, 0x6f, 0x73,
+        0x73, 0x22, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40,
+        0x01, 0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c,
+        0xd3, 0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31,
+        0x5d, 0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25,
+        0x48, 0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf,
+        0x74, 0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    //generate_test_case();
+
+    click_next();
+    assert_string_equal(display_title, "Create Name");
+    assert_string_equal(display_text, "\"cryptoboss\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Create Name");
+    assert_string_equal(display_text, "\"cryptoboss\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards
+
+    click_prev();
+    assert_string_equal(display_title, "Create Name");
+    assert_string_equal(display_text, "\"cryptoboss\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again forward
+
+    click_next();
+    assert_string_equal(display_title, "Create Name");
+    assert_string_equal(display_text, "\"cryptoboss\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+}
+
+static void
+test_tx_display_governance_update_name (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x0a,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x6e, 0x61,
+        0x6d, 0x65, 0x22, 0x01, 0x00, 0x2a, 0x64, 0x7b,
+        0x22, 0x4e, 0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22,
+        0x76, 0x31, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65,
+        0x4e, 0x61, 0x6d, 0x65, 0x22, 0x2c, 0x22, 0x41,
+        0x72, 0x67, 0x73, 0x22, 0x3a, 0x5b, 0x22, 0x63,
+        0x72, 0x79, 0x70, 0x74, 0x6f, 0x62, 0x6f, 0x73,
+        0x73, 0x22, 0x2c, 0x22, 0x41, 0x6d, 0x4d, 0x44,
+        0x45, 0x79, 0x63, 0x33, 0x36, 0x46, 0x4e, 0x58,
+        0x42, 0x33, 0x46, 0x71, 0x31, 0x61, 0x36, 0x31,
+        0x48, 0x65, 0x56, 0x4a, 0x52, 0x54, 0x34, 0x79,
+        0x73, 0x73, 0x4d, 0x45, 0x50, 0x31, 0x31, 0x4e,
+        0x57, 0x57, 0x45, 0x39, 0x51, 0x78, 0x38, 0x79,
+        0x68, 0x66, 0x52, 0x4b, 0x65, 0x78, 0x76, 0x71,
+        0x22, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    // generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "\"cryptoboss\",");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "q\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "q\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "T4yssMEP11NWW");
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "B3Fq1a61HeVJR");
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "\"cryptoboss\",");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "q\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "E9Qx8yhfRKexv");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "q\"");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "\"cryptoboss\",");
+
+    click_next();
+    assert_string_equal(display_title, "Update Name");
+    assert_string_equal(display_text, "\"AmMDEyc36FNX");
+
+}
+
+static void
+test_tx_display_governance_add_config (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x10,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x65, 0x6e,
+        0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65,
+        0x22, 0x01, 0x00, 0x2a, 0x2e, 0x7b, 0x22, 0x4e,
+        0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22, 0x61, 0x70,
+        0x70, 0x65, 0x6e, 0x64, 0x43, 0x6f, 0x6e, 0x66,
+        0x22, 0x2c, 0x22, 0x41, 0x72, 0x67, 0x73, 0x22,
+        0x3a, 0x5b, 0x22, 0x74, 0x69, 0x6d, 0x65, 0x6f,
+        0x75, 0x74, 0x22, 0x2c, 0x31, 0x32, 0x33, 0x34,
+        0x35, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    // generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    click_next();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "45");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "45");
+
+    click_prev();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "45");
+
+    click_prev();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "45");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    click_next();
+    assert_string_equal(display_title, "Add Config");
+    assert_string_equal(display_text, "45");
+
+}
+
+static void
+test_tx_display_governance_remove_config (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x10,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x65, 0x6e,
+        0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65,
+        0x22, 0x01, 0x00, 0x2a, 0x2e, 0x7b, 0x22, 0x4e,
+        0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22, 0x72, 0x65,
+        0x6d, 0x6f, 0x76, 0x65, 0x43, 0x6f, 0x6e, 0x66,
+        0x22, 0x2c, 0x22, 0x41, 0x72, 0x67, 0x73, 0x22,
+        0x3a, 0x5b, 0x22, 0x74, 0x69, 0x6d, 0x65, 0x6f,
+        0x75, 0x74, 0x22, 0x2c, 0x31, 0x32, 0x33, 0x34,
+        0x35, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    // generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "45");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "45");
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "45");
+
+    click_prev();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "45");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "\"timeout\",123");
+
+    click_next();
+    assert_string_equal(display_title, "Remove Config");
+    assert_string_equal(display_text, "45");
+
+}
+
+static void
+test_tx_display_governance_enable_config (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x10,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x65, 0x6e,
+        0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65,
+        0x22, 0x01, 0x00, 0x2a, 0x2e, 0x7b, 0x22, 0x4e,
+        0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22, 0x65, 0x6e,
+        0x61, 0x62, 0x6c, 0x65, 0x43, 0x6f, 0x6e, 0x66,
+        0x22, 0x2c, 0x22, 0x41, 0x72, 0x67, 0x73, 0x22,
+        0x3a, 0x5b, 0x22, 0x74, 0x69, 0x6d, 0x65, 0x6f,
+        0x75, 0x74, 0x22, 0x2c, 0x66, 0x61, 0x6c, 0x73,
+        0x65, 0x5d, 0x7d, 0x3a, 0x01, 0x00, 0x40, 0x01,
+        0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2, 0x4c, 0xd3,
+        0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e, 0x31, 0x5d,
+        0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8, 0x25, 0x48,
+        0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86, 0xbf, 0x74,
+        0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    // generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "\"timeout\",fal");
+
+    click_next();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "se");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "se");
+
+    click_prev();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "\"timeout\",fal");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "se");
+
+    click_prev();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "\"timeout\",fal");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "se");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "\"timeout\",fal");
+
+    click_next();
+    assert_string_equal(display_title, "Enable Config");
+    assert_string_equal(display_text, "se");
+}
+
+static void
+test_tx_display_governance_change_cluster (void **state){
+  (void) state;
+
+    // clang-format off
+    uint8_t raw_tx[] = {
+        // tx type
+        0x01,
+        // transaction
+        0x08, 0x80, 0x10, 0x12, 0x21, 0x02, 0x9d, 0x02,
+        0x05, 0x91, 0xe7, 0xfb, 0x7b, 0x09, 0x21, 0x53,
+        0x68, 0x19, 0x95, 0xf8, 0x06, 0x09, 0xf0, 0xac,
+        0x98, 0x8a, 0x4d, 0x93, 0x5e, 0x0e, 0xa6, 0x3c,
+        0x06, 0x0f, 0x19, 0x54, 0xb0, 0x5f, 0x1a, 0x10,
+        0x61, 0x65, 0x72, 0x67, 0x6f, 0x2e, 0x65, 0x6e,
+        0x74, 0x65, 0x72, 0x70, 0x72, 0x69, 0x73, 0x65,
+        0x22, 0x01, 0x00, 0x2a, 0xb7, 0x01, 0x7b, 0x22,
+        0x4e, 0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22, 0x63,
+        0x68, 0x61, 0x6e, 0x67, 0x65, 0x43, 0x6c, 0x75,
+        0x73, 0x74, 0x65, 0x72, 0x22, 0x2c, 0x22, 0x41,
+        0x72, 0x67, 0x73, 0x22, 0x3a, 0x5b, 0x7b, 0x22,
+        0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x22,
+        0x3a, 0x22, 0x61, 0x64, 0x64, 0x22, 0x2c, 0x22,
+        0x6e, 0x61, 0x6d, 0x65, 0x22, 0x3a, 0x22, 0x73,
+        0x6e, 0x61, 0x70, 0x73, 0x68, 0x6f, 0x74, 0x5f,
+        0x6e, 0x6f, 0x64, 0x65, 0x34, 0x22, 0x2c, 0x22,
+        0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22,
+        0x3a, 0x22, 0x2f, 0x64, 0x6e, 0x73, 0x2f, 0x61,
+        0x6c, 0x70, 0x68, 0x61, 0x33, 0x2e, 0x61, 0x65,
+        0x72, 0x67, 0x6f, 0x2e, 0x69, 0x6f, 0x2f, 0x74,
+        0x63, 0x70, 0x2f, 0x31, 0x37, 0x38, 0x34, 0x36,
+        0x22, 0x2c, 0x22, 0x70, 0x65, 0x65, 0x72, 0x69,
+        0x64, 0x22, 0x3a, 0x22, 0x31, 0x36, 0x55, 0x69,
+        0x75, 0x32, 0x48, 0x41, 0x6d, 0x53, 0x31, 0x51,
+        0x51, 0x50, 0x48, 0x66, 0x62, 0x73, 0x6a, 0x64,
+        0x6e, 0x35, 0x76, 0x72, 0x51, 0x43, 0x4c, 0x6d,
+        0x4a, 0x42, 0x56, 0x5a, 0x34, 0x76, 0x36, 0x75,
+        0x36, 0x44, 0x53, 0x34, 0x37, 0x64, 0x53, 0x53,
+        0x38, 0x4e, 0x6d, 0x68, 0x44, 0x67, 0x46, 0x7a,
+        0x38, 0x22, 0x7d, 0x5d, 0x7d, 0x3a, 0x01, 0x00,
+        0x40, 0x01, 0x4a, 0x20, 0x52, 0x48, 0x45, 0xc2,
+        0x4c, 0xd3, 0xe5, 0x3a, 0xec, 0xbc, 0xda, 0x8e,
+        0x31, 0x5d, 0x62, 0xdc, 0x95, 0xa7, 0xf2, 0xf8,
+        0x25, 0x48, 0x93, 0x0b, 0xc2, 0xfc, 0xc9, 0x86,
+        0xbf, 0x74, 0x53, 0xbd,
+    };
+
+    int ret = setjmp(jump_buffer);
+    assert_int_equal(ret, 0);
+
+    send_transaction(raw_tx, sizeof(raw_tx));
+
+    //generate_test_case();
+
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "{\"command\":\"a");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "dd\",\"name\":\"s");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "napshot_node4");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "\",\"address\":\"");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "/dns/alpha3.a");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "ergo.io/tcp/1");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "7846\",\"peerid");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "\":\"16Uiu2HAmS");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "1QQPHfbsjdn5v");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "rQCLmJBVZ4v6u");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "6DS47dSS8NmhD");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "gFz8\"}");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // BACKWARDS
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "gFz8\"}");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "6DS47dSS8NmhD");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "rQCLmJBVZ4v6u");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "1QQPHfbsjdn5v");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "\":\"16Uiu2HAmS");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "7846\",\"peerid");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "ergo.io/tcp/1");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "/dns/alpha3.a");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "\",\"address\":\"");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "napshot_node4");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "dd\",\"name\":\"s");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "{\"command\":\"a");
+
+    click_prev();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    // again backwards 2 more times
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "gFz8\"}");
+
+    click_prev();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "6DS47dSS8NmhD");
+
+    // then forward 4 times
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "gFz8\"}");
+
+    click_next();
+    assert_string_equal(display_title, "Review");
+    assert_string_equal(display_text, "Transaction");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "{\"command\":\"a");
+
+    click_next();
+    assert_string_equal(display_title, "Change Cluster");
+    assert_string_equal(display_text, "dd\",\"name\":\"s");
+
 }
 
 // MESSAGE
@@ -2929,7 +4184,19 @@ int main() {
       cmocka_unit_test(test_tx_display_multicall_3),
       cmocka_unit_test(test_tx_display_deploy_1),
       cmocka_unit_test(test_tx_display_deploy_2),
-      cmocka_unit_test(test_tx_display_governance),
+      // governance
+      cmocka_unit_test(test_tx_display_governance_stake),
+      cmocka_unit_test(test_tx_display_governance_unstake),
+      cmocka_unit_test(test_tx_display_governance_bp_vote),
+      cmocka_unit_test(test_tx_display_governance_dao_vote),
+      cmocka_unit_test(test_tx_display_governance_create_name),
+      cmocka_unit_test(test_tx_display_governance_update_name),
+      cmocka_unit_test(test_tx_display_governance_add_admin),
+      cmocka_unit_test(test_tx_display_governance_remove_admin),
+      cmocka_unit_test(test_tx_display_governance_add_config),
+      cmocka_unit_test(test_tx_display_governance_remove_config),
+      cmocka_unit_test(test_tx_display_governance_enable_config),
+      cmocka_unit_test(test_tx_display_governance_change_cluster),
       // message
       cmocka_unit_test(test_display_message),
       // account address
