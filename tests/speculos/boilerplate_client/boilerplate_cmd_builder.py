@@ -6,7 +6,7 @@ from typing import List, Tuple, Union, Iterator, cast
 from boilerplate_client.transaction import Transaction
 from boilerplate_client.utils import bip32_path_from_string
 
-MAX_APDU_LEN: int = 255
+MAX_APDU_LEN: int = 250
 
 
 def chunkify(data: bytes, chunk_len: int) -> Iterator[Tuple[bool, bytes]]:
@@ -29,10 +29,21 @@ def chunkify(data: bytes, chunk_len: int) -> Iterator[Tuple[bool, bytes]]:
 
 
 class InsType(enum.IntEnum):
-    INS_GET_VERSION = 0x03
-    INS_GET_APP_NAME = 0x04
-    INS_GET_PUBLIC_KEY = 0x05
-    INS_SIGN_TX = 0x06
+    #INS_GET_APP_NAME = ..
+    INS_GET_VERSION = 0x01
+    INS_GET_PUBLIC_KEY = 0x02
+    INS_DISPLAY_ACCOUNT = 0x03
+    INS_SIGN_TX = 0x04
+    INS_SIGN_MSG = 0x08
+
+#class P1Type(enum.IntEnum):
+#    P1_FIRST = 0x01
+#    P1_LAST  = 0x02
+#    P1_HEX   = 0x08
+
+P1_FIRST: int = 0x01
+P1_LAST : int = 0x02
+P1_HEX  : int = 0x08
 
 
 class BoilerplateCommandBuilder:
@@ -49,7 +60,7 @@ class BoilerplateCommandBuilder:
         Whether you want to see logging or not.
 
     """
-    CLA: int = 0xE0
+    CLA: int = 0xAE
 
     def __init__(self, debug: bool = False):
         """Init constructor."""
@@ -203,16 +214,14 @@ class BoilerplateCommandBuilder:
         tx: bytes = transaction.serialize()
 
         for i, (is_last, chunk) in enumerate(chunkify(tx, MAX_APDU_LEN)):
+            p1 = 0
+            if i == 0:
+                p1 += P1_FIRST
             if is_last:
-                yield True, self.serialize(cla=self.CLA,
-                                           ins=InsType.INS_SIGN_TX,
-                                           p1=i + 1,
-                                           p2=0x00,
-                                           cdata=chunk)
-                return
-            else:
-                yield False, self.serialize(cla=self.CLA,
-                                            ins=InsType.INS_SIGN_TX,
-                                            p1=i + 1,
-                                            p2=0x80,
-                                            cdata=chunk)
+                p1 += P1_LAST
+
+            yield is_last, self.serialize(cla=self.CLA,
+                                          ins=InsType.INS_SIGN_TX,
+                                          p1=p1,
+                                          p2=0x00,
+                                          cdata=chunk)
