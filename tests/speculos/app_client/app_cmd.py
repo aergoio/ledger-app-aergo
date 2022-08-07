@@ -108,28 +108,34 @@ class AppCommand:
         sw: int
         response: bytes = b""
 
-        for chunk in self.builder.sign_tx(bip32_path=bip32_path, transaction=transaction):
+        # do it like in text_tx_display.c
 
-            with self.client.apdu_exchange_nowait(cla=chunk[0], ins=chunk[1],
-                                                    p1=chunk[2], p2=chunk[3],
-                                                    data=chunk[5:]) as exchange:
-            else:
-                response = self.client._apdu_exchange(chunk)
-                print(response)
+        chunks = self.builder.get_sign_tx_commands(transaction=transaction)
 
-            # Review Transaction
+        #for chunk in chunks:
+
+        #response = self.client._apdu_exchange(chunks[0])
+        #print(response)
+
+
+        self.client._apdu_exchange_nowait(chunks[0])
+
+        # Review Transaction
+        self.client.press_and_release('right')
+
+        # Address
+        if model == 'nanos':
             self.client.press_and_release('right')
-            # Address
-            # Due to screen size, NanoS needs 2 more screens to display the address
-            if model == 'nanos':
-                self.client.press_and_release('right')
-                self.client.press_and_release('right')
             self.client.press_and_release('right')
-            # Amount
-            self.client.press_and_release('right')
-            # Approve
-            self.client.press_and_release('both')
-            response = exchange.receive()
+        self.client.press_and_release('right')
+
+        # Amount
+        self.client.press_and_release('right')
+
+        # Approve
+        self.client.press_and_release('both')
+
+        response = exchange.receive()
 
 
 

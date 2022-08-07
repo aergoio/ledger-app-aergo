@@ -107,6 +107,7 @@ class AppCommandBuilder:
 
         return header + cdata
 
+
     def get_app_and_version(self) -> bytes:
         """Command builder for GET_APP_AND_VERSION (builtin in BOLOS SDK).
 
@@ -121,6 +122,7 @@ class AppCommandBuilder:
                               p1=0x00,
                               p2=0x00,
                               cdata=b"")
+
 
     def get_version(self) -> bytes:
         """Command builder for GET_VERSION.
@@ -137,6 +139,7 @@ class AppCommandBuilder:
                               p2=0x00,
                               cdata=b"")
 
+
     def get_app_name(self) -> bytes:
         """Command builder for GET_APP_NAME.
 
@@ -151,6 +154,7 @@ class AppCommandBuilder:
                               p1=0x00,
                               p2=0x00,
                               cdata=b"")
+
 
     def get_public_key(self, bip32_path: str, display: bool = False) -> bytes:
         """Command builder for GET_PUBLIC_KEY.
@@ -182,13 +186,11 @@ class AppCommandBuilder:
                               cdata=cdata)
 
 
-    def sign_tx(self, bip32_path: str, transaction: bytes) -> Iterator[Tuple[bool, bytes]]:
+    def get_sign_tx_commands(self, transaction: bytes) -> [bytes]:
         """Command builder for INS_SIGN_TX.
 
         Parameters
         ----------
-        bip32_path : str
-            String representation of BIP32 path.
         transaction : bytes
             Representation of the transaction to be signed.
 
@@ -200,6 +202,7 @@ class AppCommandBuilder:
         """
 
         tx = transaction
+        chunks = []
 
         for i, (is_last, chunk) in enumerate(chunkify(tx, MAX_APDU_LEN)):
             p1 = 0
@@ -208,8 +211,12 @@ class AppCommandBuilder:
             if is_last:
                 p1 += P1_LAST
 
-            yield is_last, self.serialize(cla=self.CLA,
-                                          ins=InsType.INS_SIGN_TX,
-                                          p1=p1,
-                                          p2=0x00,
-                                          cdata=chunk)
+            data = self.serialize(cla=self.CLA,
+                                  ins=InsType.INS_SIGN_TX,
+                                  p1=p1,
+                                  p2=0x00,
+                                  cdata=chunk)
+
+            chunks.append(data)
+
+        return chunks
