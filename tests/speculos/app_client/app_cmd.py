@@ -75,7 +75,7 @@ class AppCommand:
         return response.decode("ascii")
 
 
-    def get_public_key(self, bip32_path: str, display: bool = False) -> Tuple[bytes, bytes]:
+    def get_public_key(self, bip32_path: str, display: bool = False) -> bytes:
         try:
             response = self.client._apdu_exchange(
                 self.builder.get_public_key(bip32_path=bip32_path,
@@ -84,27 +84,12 @@ class AppCommand:
         except ApduException as error:
             raise DeviceException(error_code=error.sw, ins=InsType.INS_GET_PUBLIC_KEY)
 
-        # response = pub_key_len (1) ||
-        #            pub_key (var) ||
-        #            chain_code_len (1) ||
-        #            chain_code (var)
-        offset: int = 0
+        assert len(response) == 33
 
-        pub_key_len: int = response[offset]
-        offset += 1
-        pub_key: bytes = response[offset:offset + pub_key_len]
-        offset += pub_key_len
-        chain_code_len: int = response[offset]
-        offset += 1
-        chain_code: bytes = response[offset:offset + chain_code_len]
-        offset += chain_code_len
-
-        assert len(response) == 1 + pub_key_len + 1 + chain_code_len
-
-        return pub_key, chain_code
+        return response
 
 
-    def sign_tx(self, bip32_path: str, transaction: bytes, model: str) -> Tuple[int, bytes]:
+    def sign_tx(self, transaction: bytes, model: str) -> Tuple[int, bytes]:
         sw: int
         response: bytes = b""
 
@@ -119,6 +104,10 @@ class AppCommand:
 
 
         self.client._apdu_exchange_nowait(chunks[0])
+
+        event = self.client.get_next_event()
+        print("title:", event["title"])
+        print("text :", event["text"])
 
         # Review Transaction
         self.client.press_and_release('right')

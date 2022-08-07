@@ -174,10 +174,7 @@ class AppCommandBuilder:
         """
         bip32_paths: List[bytes] = bip32_path_from_string(bip32_path)
 
-        cdata: bytes = b"".join([
-            len(bip32_paths).to_bytes(1, byteorder="big"),
-            *bip32_paths
-        ])
+        cdata: bytes = b"".join([*bip32_paths])
 
         return self.serialize(cla=self.CLA,
                               ins=InsType.INS_GET_PUBLIC_KEY,
