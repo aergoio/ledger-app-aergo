@@ -3,18 +3,18 @@ from typing import Tuple
 
 from speculos.client import SpeculosClient, ApduException
 
-from boilerplate_client.boilerplate_cmd_builder import BoilerplateCommandBuilder, InsType
-from boilerplate_client.exception import DeviceException
-from boilerplate_client.transaction import Transaction
+from app_client.app_cmd_builder import AppCommandBuilder, InsType
+from app_client.exception import DeviceException
 
 
-class BoilerplateCommand:
+class AppCommand:
     def __init__(self,
                  client: SpeculosClient,
                  debug: bool = False) -> None:
         self.client = client
-        self.builder = BoilerplateCommandBuilder(debug=debug)
+        self.builder = AppCommandBuilder(debug=debug)
         self.debug = debug
+
 
     def get_app_and_version(self) -> Tuple[str, str]:
         try:
@@ -44,6 +44,7 @@ class BoilerplateCommand:
 
         return app_name, version
 
+
     def get_version(self) -> Tuple[int, int, int]:
         try:
             response = self.client._apdu_exchange(
@@ -62,6 +63,7 @@ class BoilerplateCommand:
 
         return major, minor, patch
 
+
     def get_app_name(self) -> str:
         try:
             response = self.client._apdu_exchange(
@@ -71,6 +73,7 @@ class BoilerplateCommand:
             raise DeviceException(error_code=error.sw, ins=InsType.INS_GET_APP_NAME)
 
         return response.decode("ascii")
+
 
     def get_public_key(self, bip32_path: str, display: bool = False) -> Tuple[bytes, bytes]:
         try:
@@ -100,31 +103,35 @@ class BoilerplateCommand:
 
         return pub_key, chain_code
 
-    def sign_tx(self, bip32_path: str, transaction: Transaction, model: str) -> Tuple[int, bytes]:
+
+    def sign_tx(self, bip32_path: str, transaction: bytes, model: str) -> Tuple[int, bytes]:
         sw: int
         response: bytes = b""
 
-        for is_last, chunk in self.builder.sign_tx(bip32_path=bip32_path, transaction=transaction):
-            if is_last:
-                with self.client.apdu_exchange_nowait(cla=chunk[0], ins=chunk[1],
-                                                      p1=chunk[2], p2=chunk[3],
-                                                      data=chunk[5:]) as exchange:
-                    # Review Transaction
-                    self.client.press_and_release('right')
-                    # Address
-                    # Due to screen size, NanoS needs 2 more screens to display the address
-                    if model == 'nanos':
-                        self.client.press_and_release('right')
-                        self.client.press_and_release('right')
-                    self.client.press_and_release('right')
-                    # Amount
-                    self.client.press_and_release('right')
-                    # Approve
-                    self.client.press_and_release('both')
-                    response = exchange.receive()
+        for chunk in self.builder.sign_tx(bip32_path=bip32_path, transaction=transaction):
+
+            with self.client.apdu_exchange_nowait(cla=chunk[0], ins=chunk[1],
+                                                    p1=chunk[2], p2=chunk[3],
+                                                    data=chunk[5:]) as exchange:
             else:
                 response = self.client._apdu_exchange(chunk)
                 print(response)
+
+            # Review Transaction
+            self.client.press_and_release('right')
+            # Address
+            # Due to screen size, NanoS needs 2 more screens to display the address
+            if model == 'nanos':
+                self.client.press_and_release('right')
+                self.client.press_and_release('right')
+            self.client.press_and_release('right')
+            # Amount
+            self.client.press_and_release('right')
+            # Approve
+            self.client.press_and_release('both')
+            response = exchange.receive()
+
+
 
         # response = der_sig_len (1) ||
         #            der_sig (var) ||

@@ -2,7 +2,7 @@ import pytest
 
 from speculos.client import ApduException
 
-from boilerplate_client.exception import *
+from app_client.exception import *
 
 
 @pytest.mark.xfail(raises=ClaNotSupportedError)

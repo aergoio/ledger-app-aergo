@@ -3,8 +3,7 @@ import logging
 import struct
 from typing import List, Tuple, Union, Iterator, cast
 
-from boilerplate_client.transaction import Transaction
-from boilerplate_client.utils import bip32_path_from_string
+from app_client.utils import bip32_path_from_string
 
 MAX_APDU_LEN: int = 250
 
@@ -46,8 +45,8 @@ P1_LAST : int = 0x02
 P1_HEX  : int = 0x08
 
 
-class BoilerplateCommandBuilder:
-    """APDU command builder for the Boilerplate application.
+class AppCommandBuilder:
+    """APDU command builder for the Aergo application.
 
     Parameters
     ----------
@@ -182,14 +181,15 @@ class BoilerplateCommandBuilder:
                               p2=0x00,
                               cdata=cdata)
 
-    def sign_tx(self, bip32_path: str, transaction: Transaction) -> Iterator[Tuple[bool, bytes]]:
+
+    def sign_tx(self, bip32_path: str, transaction: bytes) -> Iterator[Tuple[bool, bytes]]:
         """Command builder for INS_SIGN_TX.
 
         Parameters
         ----------
         bip32_path : str
             String representation of BIP32 path.
-        transaction : Transaction
+        transaction : bytes
             Representation of the transaction to be signed.
 
         Yields
@@ -198,20 +198,8 @@ class BoilerplateCommandBuilder:
             APDU command chunk for INS_SIGN_TX.
 
         """
-        bip32_paths: List[bytes] = bip32_path_from_string(bip32_path)
 
-        cdata: bytes = b"".join([
-            len(bip32_paths).to_bytes(1, byteorder="big"),
-            *bip32_paths
-        ])
-
-        yield False, self.serialize(cla=self.CLA,
-                                    ins=InsType.INS_SIGN_TX,
-                                    p1=0x00,
-                                    p2=0x80,
-                                    cdata=cdata)
-
-        tx: bytes = transaction.serialize()
+        tx = transaction
 
         for i, (is_last, chunk) in enumerate(chunkify(tx, MAX_APDU_LEN)):
             p1 = 0

@@ -5,7 +5,7 @@ import pytest
 
 from speculos.client import SpeculosClient
 
-from boilerplate_client.boilerplate_cmd import BoilerplateCommand
+from app_client.app_cmd import AppCommand
 
 
 SCRIPT_DIR = Path(__file__).absolute().parent
@@ -53,7 +53,7 @@ def client(model, sdk):
 
 @pytest.fixture
 def cmd(client):
-    yield BoilerplateCommand(
+    yield AppCommand(
         client=client,
         debug=True
     )
