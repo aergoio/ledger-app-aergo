@@ -73,7 +73,7 @@ jobs:
       - name: Build unit tests
         run: |
           cd unit-tests/
-          #cmake -Bbuild -H. && make -C build && make -C build test
+          # cmake -Bbuild -H. && make -C build && make -C build test
           ./run_tests
       - name: Generate code coverage
         run: |
@@ -89,15 +89,15 @@ jobs:
           name: code-coverage
           path: unit-tests/coverage
 
-      - name: Upload to codecov.io
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./unit-tests/coverage.info
-          flags: unittests
-          name: codecov-app-aergo
-          fail_ci_if_error: true
-          verbose: true
+      #- name: Upload to codecov.io
+      #  uses: codecov/codecov-action@v1
+      #  with:
+      #    token: ${{ secrets.CODECOV_TOKEN }}
+      #    file: ./unit-tests/coverage.info
+      #    flags: unittests
+      #    name: codecov-app-aergo
+      #    fail_ci_if_error: true
+      #    verbose: true
 
 
   job_functional_test_speculos:

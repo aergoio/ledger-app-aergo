@@ -1,5 +1,6 @@
+rm *.gcda *.gcno
 set -e
-clang -Wall -pedantic -g -O0 test_tx_parser.c ../src/common/uint256.c ../fuzzing/sha256.c -I../fuzzing -lcmocka
-./a.out
-clang -Wall -pedantic -g -O0 test_tx_display.c ../src/common/uint256.c ../fuzzing/sha256.c -I../fuzzing -lcmocka
-./a.out
+clang -Wall -pedantic -g -O0 --coverage -lgcov test_tx_parser.c ../src/common/uint256.c ../fuzzing/sha256.c -I../fuzzing -lcmocka -o test_tx_parser
+./test_tx_parser
+clang -Wall -pedantic -g -O0 --coverage -lgcov test_tx_display.c ../src/common/uint256.c ../fuzzing/sha256.c -I../fuzzing -lcmocka -o test_tx_display
+./test_tx_display
