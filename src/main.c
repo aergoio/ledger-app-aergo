@@ -165,6 +165,10 @@ void app_main() {
         if (rx == 0) {
           THROW(0x6982);
         }
+        // check the length of the received APDU
+        if (rx < 5 || G_io_apdu_buffer[4] != rx - 5) {
+          THROW(0x6A87);
+        }
 
         if (G_io_apdu_buffer[0] != CLA) {
           THROW(0x6E00);
@@ -264,9 +268,6 @@ void app_main() {
           on_new_message(text, len, as_hex);
           flags |= IO_ASYNCH_REPLY;
         } break;
-
-        case 0xFF: // return to dashboard
-          goto return_to_dashboard;
 
         default:
           THROW(0x6D00);
