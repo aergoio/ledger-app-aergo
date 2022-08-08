@@ -28,17 +28,12 @@ def chunkify(data: bytes, chunk_len: int) -> Iterator[Tuple[bool, bytes]]:
 
 
 class InsType(enum.IntEnum):
-    #INS_GET_APP_NAME = ..
     INS_GET_VERSION = 0x01
     INS_GET_PUBLIC_KEY = 0x02
     INS_DISPLAY_ACCOUNT = 0x03
     INS_SIGN_TX = 0x04
     INS_SIGN_MSG = 0x08
 
-#class P1Type(enum.IntEnum):
-#    P1_FIRST = 0x01
-#    P1_LAST  = 0x02
-#    P1_HEX   = 0x08
 
 P1_FIRST: int = 0x01
 P1_LAST : int = 0x02
@@ -135,22 +130,6 @@ class AppCommandBuilder:
         """
         return self.serialize(cla=self.CLA,
                               ins=InsType.INS_GET_VERSION,
-                              p1=0x00,
-                              p2=0x00,
-                              cdata=b"")
-
-
-    def get_app_name(self) -> bytes:
-        """Command builder for GET_APP_NAME.
-
-        Returns
-        -------
-        bytes
-            APDU command for GET_APP_NAME.
-
-        """
-        return self.serialize(cla=self.CLA,
-                              ins=InsType.INS_GET_APP_NAME,
                               p1=0x00,
                               p2=0x00,
                               cdata=b"")

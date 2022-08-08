@@ -76,17 +76,6 @@ class AppCommand:
         return major, minor
 
 
-    def get_app_name(self) -> str:
-        try:
-            response = self.client._apdu_exchange(
-                self.builder.get_app_name()
-            )  # type: int, bytes
-        except ApduException as error:
-            raise DeviceException(error_code=error.sw, ins=InsType.INS_GET_APP_NAME)
-
-        return response.decode("ascii")
-
-
     def get_public_key(self, bip32_path: str, display: bool = False) -> bytes:
         try:
             response = self.client._apdu_exchange(
