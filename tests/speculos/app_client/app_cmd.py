@@ -53,6 +53,7 @@ class AppCommand:
         except ApduException as error:
             raise DeviceException(error_code=error.sw, ins=InsType.INS_GET_VERSION)
 
+        """
         # response = MAJOR (1) || MINOR (1) || PATCH (1)
         assert len(response) == 3
 
@@ -62,6 +63,17 @@ class AppCommand:
         )  # type: int, int, int
 
         return major, minor, patch
+        """
+
+        # response = MAJOR (1) || MINOR (1)
+        assert len(response) == 2
+
+        major, minor = struct.unpack(
+            "BB",
+            response
+        )  # type: int, int
+
+        return major, minor
 
 
     def get_app_name(self) -> str:
