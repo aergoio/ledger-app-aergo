@@ -1,7 +1,7 @@
 import struct
 from typing import Tuple
 
-from speculos.client import SpeculosClient, ApduException
+from speculos.client import SpeculosClient, ApduResponse, ApduException
 
 from app_client.app_cmd_builder import AppCommandBuilder, InsType
 from app_client.exception import DeviceException
@@ -93,8 +93,6 @@ class AppCommand:
         sw: int
         response: bytes = b""
 
-        # do it like in text_tx_display.c
-
         chunks = self.builder.get_sign_tx_commands(transaction=transaction)
 
         #for chunk in chunks:
@@ -102,43 +100,75 @@ class AppCommand:
         #response = self.client._apdu_exchange(chunks[0])
         #print(response)
 
-
-        self.client._apdu_exchange_nowait(chunks[0])
-
-        event = self.client.get_next_event()
-        print("title:", event["title"])
-        print("text :", event["text"])
+        client_response = self.client._apdu_exchange_nowait(chunks[0])
 
         # Review Transaction
-        self.client.press_and_release('right')
-
-        # Address
-        if model == 'nanos':
-            self.client.press_and_release('right')
-            self.client.press_and_release('right')
-        self.client.press_and_release('right')
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        print("-------------------")
 
         # Amount
         self.client.press_and_release('right')
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        print("-------------------")
+
+        if model == 'nanos':
+            # Recipient
+            self.client.press_and_release('right')
+            event = self.client.get_next_event()
+            print("text :", event["text"])
+            event = self.client.get_next_event()
+            print("text :", event["text"])
+            print("-------------------")
+
+            # Recipient
+            self.client.press_and_release('right')
+            event = self.client.get_next_event()
+            print("text :", event["text"])
+            event = self.client.get_next_event()
+            print("text :", event["text"])
+            print("-------------------")
+
+            # Recipient
+            self.client.press_and_release('right')
+            event = self.client.get_next_event()
+            print("text :", event["text"])
+            event = self.client.get_next_event()
+            print("text :", event["text"])
+            print("-------------------")
+
+        # Recipient
+        self.client.press_and_release('right')
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        print("-------------------")
+
+        # Sign Transaction
+        self.client.press_and_release('right')
+        """
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        """
+        print("-------------------")
 
         # Approve
         self.client.press_and_release('both')
 
-        response = exchange.receive()
+        response = ApduResponse(client_response).receive()
+        print("response :", response)
 
+        assert len(response) > 32
 
+        txn_hash = response[0:32]
+        signature = response[32:]
 
-        # response = der_sig_len (1) ||
-        #            der_sig (var) ||
-        #            v (1)
-        offset: int = 0
-        der_sig_len: int = response[offset]
-        offset += 1
-        der_sig: bytes = response[offset:offset + der_sig_len]
-        offset += der_sig_len
-        v: int = response[offset]
-        offset += 1
-
-        assert len(response) == 1 + der_sig_len + 1
-
-        return v, der_sig
+        return txn_hash, signature
