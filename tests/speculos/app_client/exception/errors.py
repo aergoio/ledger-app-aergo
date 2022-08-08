@@ -14,6 +14,10 @@ class WrongDataLengthError(Exception):
     pass
 
 
+class WrongLengthError(Exception):
+    pass
+
+
 class InsNotSupportedError(Exception):
     pass
 
@@ -22,37 +26,9 @@ class ClaNotSupportedError(Exception):
     pass
 
 
-class WrongResponseLengthError(Exception):
+class InvalidStateError(Exception):
     pass
 
 
-class DisplayBip32PathFailError(Exception):
-    pass
-
-
-class DisplayAddressFailError(Exception):
-    pass
-
-
-class DisplayAmountFailError(Exception):
-    pass
-
-
-class WrongTxLengthError(Exception):
-    pass
-
-
-class TxParsingFailError(Exception):
-    pass
-
-
-class TxHashFail(Exception):
-    pass
-
-
-class BadStateError(Exception):
-    pass
-
-
-class SignatureFailError(Exception):
+class ResendFirstPartError(Exception):
     pass

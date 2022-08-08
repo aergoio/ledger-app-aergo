@@ -3,17 +3,11 @@ from .errors import (UnknownDeviceError,
                      DenyError,
                      WrongP1P2Error,
                      WrongDataLengthError,
+                     WrongLengthError,
                      InsNotSupportedError,
                      ClaNotSupportedError,
-                     WrongResponseLengthError,
-                     DisplayBip32PathFailError,
-                     DisplayAddressFailError,
-                     DisplayAmountFailError,
-                     WrongTxLengthError,
-                     TxParsingFailError,
-                     TxHashFail,
-                     BadStateError,
-                     SignatureFailError)
+                     InvalidStateError,
+                     ResendFirstPartError)
 
 __all__ = [
     "DeviceException",
@@ -23,13 +17,7 @@ __all__ = [
     "WrongDataLengthError",
     "InsNotSupportedError",
     "ClaNotSupportedError",
-    "WrongResponseLengthError",
-    "DisplayBip32PathFailError",
-    "DisplayAddressFailError",
-    "DisplayAmountFailError",
-    "WrongTxLengthError",
-    "TxParsingFailError",
-    "TxHashFail",
-    "BadStateError",
-    "SignatureFailError"
+    "WrongLengthError",
+    "InvalidStateError",
+    "ResendFirstPartError"
 ]
