@@ -12,6 +12,7 @@
 #include "glyphs.h"
 
 #include "apdu.h"
+#include "sw.h"
 
 #include "globals.h"
 
@@ -167,11 +168,11 @@ void app_main() {
         }
         // check the length of the received APDU
         if (rx < 5 || G_io_apdu_buffer[4] != rx - 5) {
-          THROW(0x6A87);
+          THROW(SW_WRONG_DATA_LENGTH);
         }
 
         if (G_io_apdu_buffer[0] != CLA) {
-          THROW(0x6E00);
+          THROW(SW_CLA_NOT_SUPPORTED);
         }
 
         cmd_type = G_io_apdu_buffer[1];
@@ -181,7 +182,7 @@ void app_main() {
           G_io_apdu_buffer[0] = APP_VERSION_MAJOR;
           G_io_apdu_buffer[1] = APP_VERSION_MINOR;
           tx = 2;
-          THROW(0x9000);
+          THROW(SW_OK);
         } break;
 
         case INS_GET_PUBLIC_KEY: {
@@ -193,27 +194,27 @@ void app_main() {
 
           if (len > 0) {
             if (crypto_select_account(path,len) == false) {
-              THROW(0x6700);  // wrong length
+              THROW(SW_WRONG_LENGTH);
             }
           } else if (!account_selected) {
-            THROW(0x6985);  // invalid state
+            THROW(SW_INVALID_STATE);
           }
 
           memmove(G_io_apdu_buffer, public_key.W, 33);
           tx = 33;
-          THROW(0x9000);
+          THROW(SW_OK);
         } break;
 
         case INS_DISPLAY_ACCOUNT: {
 
           if (!account_selected) {
-            THROW(0x6985);  // invalid state
+            THROW(SW_INVALID_STATE);
           }
 
           on_display_account(public_key.W, 33);
 
           tx = 0;
-          THROW(0x9000);
+          THROW(SW_OK);
         } break;
 
         case INS_SIGN_TXN: {
@@ -223,7 +224,7 @@ void app_main() {
           bool is_last = false;
 
           if (!account_selected) {
-            THROW(0x6985);  // invalid state
+            THROW(SW_INVALID_STATE);
           }
 
           if (G_io_apdu_buffer[2] & P1_FIRST) {
@@ -235,10 +236,10 @@ void app_main() {
           // check the message length
           len = G_io_apdu_buffer[4];
           if (len > 250) {
-            THROW(0x6700);  // wrong length
+            THROW(SW_WRONG_LENGTH);
           }
           if (!is_last && len < 50) {
-            THROW(0x6700);  // wrong length
+            THROW(SW_WRONG_LENGTH);
           }
           //
           text = G_io_apdu_buffer + 5;
@@ -252,7 +253,7 @@ void app_main() {
           bool as_hex = false;
 
           if (!account_selected) {
-            THROW(0x6985);  // invalid state
+            THROW(SW_INVALID_STATE);
           }
 
           if (G_io_apdu_buffer[2] & P1_HEX) {
@@ -261,7 +262,7 @@ void app_main() {
           // check the message length
           len = G_io_apdu_buffer[4];
           if (len > 250) {
-            THROW(0x6700);  // wrong length
+            THROW(SW_WRONG_LENGTH);
           }
           //
           text = G_io_apdu_buffer + 5;
@@ -270,7 +271,7 @@ void app_main() {
         } break;
 
         default:
-          THROW(0x6D00);
+          THROW(SW_INS_NOT_SUPPORTED);
           break;
         }
       }
@@ -280,7 +281,7 @@ void app_main() {
       CATCH_OTHER(e) {
         switch (e & 0xF000) {
         case 0x6000:
-        case 0x9000:
+        case SW_OK:
           sw = e;
           break;
         default:
@@ -298,8 +299,6 @@ void app_main() {
     END_TRY;
   }
 
-return_to_dashboard:
-  return;
 }
 
 /**

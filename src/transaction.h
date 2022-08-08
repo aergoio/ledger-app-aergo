@@ -1,3 +1,4 @@
+#include "sw.h"
 
 #define AddressLength         33
 #define EncodedAddressLength  52
@@ -483,11 +484,11 @@ static void parse_transaction_part(unsigned char *buf, unsigned int len, bool is
 
   /* check the minimum transaction size */
   if (is_first && len < 60) {
-    THROW(0x6700);  // wrong length
+    THROW(SW_WRONG_LENGTH);
   }
 
   if (!is_first && txn_is_complete) {
-    THROW(0x6985);  // invalid state
+    THROW(SW_INVALID_STATE);
   }
 
   is_first_part = is_first;
