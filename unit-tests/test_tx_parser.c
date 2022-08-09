@@ -657,7 +657,7 @@ static void test_tx_parsing_incomplete_txn(void **state) {
 
     int status = parse_transaction(raw_tx, sizeof(raw_tx));
 
-    assert_int_equal(status, 0x6740);
+    assert_int_equal(status, 0x6735);
 }
 
 
