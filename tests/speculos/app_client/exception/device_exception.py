@@ -13,6 +13,7 @@ class DeviceException(Exception):  # pylint: disable=too-few-public-methods
         0x6E00: ClaNotSupportedError,
         0x6700: WrongLengthError,
         0x6985: InvalidStateError,
+        0x6735: IncompleteTxnError,
         0x9001: ResendFirstPartError
     }
 

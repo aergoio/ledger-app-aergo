@@ -66,7 +66,7 @@ static void sign_transaction() {
   unsigned int tx = 0;
 
   if (!txn_is_complete) {
-    THROW(0x6986);
+    THROW(SW_TXN_INCOMPLETE);
   }
 
   /* copy the transaction hash */
@@ -164,7 +164,7 @@ void app_main() {
         // no apdu received, well, reset the session, and reset the
         // bootloader configuration
         if (rx == 0) {
-          THROW(0x6982);
+          THROW(SW_REJECTED);
         }
         // check the length of the received APDU
         if (rx < 5 || G_io_apdu_buffer[4] != rx - 5) {

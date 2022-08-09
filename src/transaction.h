@@ -55,7 +55,7 @@ static unsigned int decode_varint(unsigned char *buf, unsigned int max_len, uint
 
   do {
     if (bitpos >= 64) {
-      THROW(0x6984);  // invalid data
+      THROW(0x6731);  // invalid data
     }
 
     if (len >= max_len) return 0;
@@ -243,7 +243,7 @@ loc_incomplete2:
   ptr--;
   len++;
 loc_incomplete:
-  THROW(0x6955);  // the transaction is incomplete
+  THROW(0x6732);  // the transaction lacks a field
 
 loc_invalid:
   THROW(0x6720 + pos);  // invalid data
@@ -503,7 +503,7 @@ static void parse_transaction_part(unsigned char *buf, unsigned int len, bool is
   }
 
   if (is_last && !txn_is_complete) {
-    THROW(0x6740);  // invalid data
+    THROW(SW_TXN_INCOMPLETE);
   }
 
 }

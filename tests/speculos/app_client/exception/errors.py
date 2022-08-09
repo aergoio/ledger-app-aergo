@@ -30,5 +30,9 @@ class InvalidStateError(Exception):
     pass
 
 
+class IncompleteTxnError(Exception):
+    pass
+
+
 class ResendFirstPartError(Exception):
     pass

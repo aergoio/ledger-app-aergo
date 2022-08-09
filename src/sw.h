@@ -36,3 +36,7 @@
  * Status word for invalid state.
  */
 #define SW_INVALID_STATE 0x6985
+/**
+ * Status word for incomplete transaction.
+ */
+#define SW_TXN_INCOMPLETE 0x6735
