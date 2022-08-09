@@ -122,4 +122,4 @@ make delete
 
 ## Interfacing with the app
 
-Check the [wiki](https://github.com/aergoio/ledger-app-aergo/wiki/APDU-Requests) for more information
+Check the [docs](docs/apdu.md) for more information
