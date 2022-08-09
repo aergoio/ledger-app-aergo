@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#define APP_VERSION_MAJOR   1
-#define APP_VERSION_MINOR   1
+#define APP_VERSION_MAJOR   2
+#define APP_VERSION_MINOR   0
 
 #include "os.h"
 #include "cx.h"
