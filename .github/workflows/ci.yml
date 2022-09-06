@@ -19,10 +19,10 @@ jobs:
         include:
           - SDK: "$NANOS_SDK"
             artifact: aergo-app-nanos
-          #- SDK: "$NANOX_SDK"
-          #  artifact: aergo-app-nanox
-          #- SDK: "$NANOSP_SDK"
-          #  artifact: aergo-app-nanosp
+          - SDK: "$NANOX_SDK"
+            artifact: aergo-app-nanox
+          - SDK: "$NANOSP_SDK"
+            artifact: aergo-app-nanosp
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
@@ -106,10 +106,10 @@ jobs:
         include:
           - model: nanos
             SDK: "2.1"
-          #- model: nanox
-          #  SDK: "2.0.2"
-          #- model: nanosp
-          #  SDK: "1.0.3"
+          - model: nanox
+            SDK: "2.0.2"
+          - model: nanosp
+            SDK: "1.0.3"
     needs:
       - nano_build
     runs-on: ubuntu-latest

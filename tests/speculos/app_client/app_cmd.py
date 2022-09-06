@@ -135,13 +135,13 @@ class AppCommand:
             print("text :", event["text"])
             print("-------------------")
 
-            # Recipient
-            self.client.press_and_release('right')
-            event = self.client.get_next_event()
-            print("text :", event["text"])
-            event = self.client.get_next_event()
-            print("text :", event["text"])
-            print("-------------------")
+        # Recipient
+        self.client.press_and_release('right')
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        event = self.client.get_next_event()
+        print("text :", event["text"])
+        print("-------------------")
 
         # Recipient
         self.client.press_and_release('right')
