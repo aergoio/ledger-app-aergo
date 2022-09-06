@@ -1,6 +1,6 @@
 
 char global_title[20];
-char global_text[20];
+char global_text[64];
 
 
 int  cmd_type;

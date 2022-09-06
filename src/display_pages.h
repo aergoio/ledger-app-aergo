@@ -1,5 +1,9 @@
 
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
+#define MAX_CHARS_PER_LINE 45
+#else // TARGET_NANOS
 #define MAX_CHARS_PER_LINE 13  // some strings do not appear entirely on the screen if bigger than this
+#endif
 
 #define PAGE_FIRST 1
 #define PAGE_NEXT  2
@@ -29,7 +33,7 @@ static int max_pages;
 void (*display_page_callback)(bool);
 
 
-static char parsed_text[30];     // remaining part
+static char parsed_text[MAX_CHARS_PER_LINE + 20];     // remaining part
 static unsigned int  parsed_size;
 
 static unsigned char*input_text;
